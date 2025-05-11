@@ -22,7 +22,7 @@ In Europe, WOFOST is typically applied at spatial units of 10x10 km for which sc
 
   # Yield prediction model
 WOFOST model was used as a base. WOFOST is a dynamic simulation model that uses daily weather data, and crop, soil and management parameters to simulate crop growth and development.
-It was originally developed for European conditions by Wagenigen university and is transparent and simple to modify.
+It was originally developed for European conditions by Wagenigen university and is transparent and simple to modify. /n
 https://www.wur.nl/en/Research-Results/Research-Institutes/Environmental-Research/Facilities-Tools/Software-models-and-databases/WOFOST.htm
 
 ## Model arguments
@@ -48,7 +48,7 @@ https://www.wur.nl/en/Research-Results/Research-Institutes/Environmental-Researc
    - SMFCF, SMW, SM0 – Soil water holding capacity (can go in soil list)
    - CRAIRC – Critical air content to avoid anaerobic conditions
   
-https://edepot.wur.nl/308997
+https://edepot.wur.nl/308997 /n
 https://github.com/ajwdewit/WOFOST_crop_parameters/blob/master/wheat.yaml
 
 2. **weather - data frame with weather data**
@@ -77,7 +77,7 @@ The model has 8 state variables:
 TSUM is calculated by interpolating Tavg = (Tmin + Tmax)/2
 
 ### Development stage calculation
-DVS = 0 → Emergence
-DVS = 1 → Anthesis (after reaching TSUM1)
+DVS = 0 → Emergence /n
+DVS = 1 → Anthesis (after reaching TSUM1) /n
 DVS = 2 → Maturity (after reaching TSUM1 + TSUM2)
 
