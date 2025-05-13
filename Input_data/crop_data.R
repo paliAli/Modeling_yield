@@ -40,5 +40,24 @@ crop <- list(
            1.000, 1.000,
            2.000, 1.000),
   RGRLAI = 0.0082,
-  Q10 = 2.0
+  Q10 = 2.0,
+  Ce = 0.45,
+  k = 0.6,
+  CVL = 0.685,
+  CVO = 0.709,
+  CVR = 0.694,
+  CVS = 0.662
 )
+
+# Convert the partitioning coefficient into data frames
+make_partition_df <- function(tbl) {
+  data.frame(
+    DVS = tbl[seq(1, length(tbl), by = 2)],
+    Value = tbl[seq(2, length(tbl), by = 2)]
+  )
+}
+
+FLTB_df <- make_partition_df(crop$FLTB)
+FSTB_df <- make_partition_df(crop$FSTB)
+FRTB_df <- make_partition_df(crop$FRTB)
+FOTB_df <- make_partition_df(crop$FOTB)

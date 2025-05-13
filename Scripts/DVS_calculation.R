@@ -23,7 +23,7 @@ setwd("~/GitHub/Modeling_yield")
 crop <- source("Input_data/crop_data.R")
 
 # Define crop TSUM thresholds ----
-TSUM_stages <- c(crop$value[["TSUMEM"]],crop$value[["TSUMEM"]] + crop$value[["TSUM1"]], crop$value[["TSUMEM"]] + crop$value[["TSUM1"]] + crop$value[["TSUM2"]]) # Cumulative TSUM values
+TSUM_stages <- c(crop$TSUMEM,crop$TSUMEM + crop$TSUM1, crop$TSUMEM + crop$TSUM1 + crop$TSUM2) # Cumulative TSUM values
 DVS_stages <- c(0, 1, 2) # Corresponding development stages
 
 # Import the weather data
@@ -34,7 +34,7 @@ weather <- weather[weather$YEAR == "2024",]
 ?approx
 
 # Compute TSUM and DVS for each location
-DVS <- weather %>%
+DVS_weather <- weather %>%
   group_by(LON, LAT) %>%
   arrange(Date) %>%
   mutate(
@@ -43,8 +43,10 @@ DVS <- weather %>%
   ) %>%
   ungroup()
 
+write.csv(DVS_weather, "Input_data/DVS_weather.csv", row.names = FALSE)
+
 # Visualize the development stages 
-ggplot(data = DVS, aes(x = DOY, y = DVS_stage, color = paste(LON, LAT))) +
+ggplot(data = DVS_weather, aes(x = DOY, y = DVS_stage, color = paste(LON, LAT))) +
   geom_line() +
   labs(title = "Development Stages (DVS) Over Time",
        x = "DOY",
