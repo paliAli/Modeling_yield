@@ -44,6 +44,7 @@ https://www.wur.nl/en/Research-Results/Research-Institutes/Environmental-Researc
    -  RMR - relative maintenance respiration rate of roots ['d-1']
    -  RMS - relative maintenance respiration rate of stems ['d-1']
    -  RGRLAI - maximum relative increase in LAI ['d-1']
+   -  Q10 - relative increase in respiration rate per 10 degrees Celsius temperature increase
   
    For modeling yield under different climate change scenarios:
    - root_depth_max – Deep rooting helps tolerate drought
@@ -89,3 +90,5 @@ DVS = 1 → Anthesis (after reaching TSUM1)
 
 DVS = 2 → Maturity (after reaching TSUM1 + TSUM2)
 
+- Tavg accumulates each day to get TSUM
+- DVS was interpolated from known (TSUM, DVS) pairs using approx()
