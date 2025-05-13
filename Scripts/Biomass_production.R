@@ -146,14 +146,14 @@ ggplot(out_df, aes(x = time, y = LAI)) +
 
 # For later when the coordinates are grouped into countries?
 # Define a function to run the model for a single region
-run_model_for_region <- function(region_weather) {
+#run_model_for_region <- function(region_weather) {
   # Define time vector based on the number of days in the region weather data
-  num_steps <- nrow(region_weather)
-  times <- seq(1, num_steps, by = 1)
+  #num_steps <- nrow(region_weather)
+  #times <- seq(1, num_steps, by = 1)
   
   # Run the model
-  out <- ode(y = state, times = times, func = crop_growth, parms = crop)
+  #out <- ode(y = state, times = times, func = crop_growth, parms = crop)
   
   # Return the output
-  return(out)
-}
+  #return(out)
+#}
