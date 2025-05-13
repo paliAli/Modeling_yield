@@ -4,7 +4,7 @@ library(nasapower)
 library(ggplot2)
 library(dplyr)
 
-#define the longtitude and latitude of europa
+#define the longtitude and latitude of europa （i dont know how to get the lonlat from gps?）
 latitudes <- seq(35, 72, by = 1)
 longitudes <- seq(-30, 50, by = 1) 
 
@@ -32,6 +32,7 @@ for (lat in latitudes) {
     Europe_weather_data <- rbind(Europe_weather_data, data)
   }
 }
+
 #save the data
 write.csv(Europe_weather_data, "Europe_weather_data.csv", row.names = FALSE)
 #read the data
