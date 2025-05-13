@@ -9,8 +9,10 @@ Simulate (potential) crop yield of winter wheat
 - simulate crop yield in the future under different climate scenarios
 
 ## Structure of the repository
-Input_data: contains the data on climate, soil, sowing datesW
+Input_data: contains the data on climate, soil, sowing dates
+
 Scripts: contain the model functions
+
 Output: Contains the yield predictions, visualized as a map
 
   # Winter wheat distribution
