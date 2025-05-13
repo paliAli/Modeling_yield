@@ -1,4 +1,4 @@
-#input weahter data
+#input weather data
 install.packages("nasapower")
 library(nasapower)
 library(ggplot2)
@@ -14,8 +14,8 @@ endDate <- "2025-01-01"
 dates <- c(startDate, endDate)
 
 #download the data from NASA POWER
-Variables <- c("ALLSKY_SFC_SW_DWN", "PRECTOTCORR", "RH2M", "T2MDEW", "T2M_MAX", "T2M_MIN", "WS2M")
-VarName <- c("Solar", "ppt", "RH", "Tdew", "Tmax", "Tmin", "windspeed")
+Variables <- c("ALLSKY_SFC_SW_DWN", "PRECTOTCORR", "RH2M", "T2MDEW", "T2M_MAX", "T2M_MIN", "WS2M", "VAP")
+VarName <- c("Solar", "ppt", "RH", "Tdew", "Tmax", "Tmin", "windspeed", "vap")
 
 #download the data from NASA POWER
 Europe_weather_data <- data.frame()
