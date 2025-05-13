@@ -65,6 +65,6 @@ Europe_weather_data <- Europe_weather_data %>%
   )
 
 #save the data
-write.csv(Europe_weather_data, "Europe_weather_data.csv", row.names = FALSE)
+write.csv(Europe_weather_data, "~/Github/Modeling_yield/Europe_weather_data.csv", row.names = FALSE)
 
 
