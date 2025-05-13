@@ -62,12 +62,12 @@ https://github.com/ajwdewit/WOFOST_crop_parameters/blob/master/wheat.yaml
    Must contain:
    - date
    - day of the year (doy)
-   - solar radiation [kJ m-2 day-1]
-   - minimum temperature [degrees C]
-   - maximum temperature [degrees C]
-   - vapor pressure [kPa]
-   - wind speed [ms-1]
-   - precipitation [mm day-1]
+   - solar radiation [kJ m-2 day-1] (Solar)
+   - minimum temperature [degrees C] (Tmin)
+   - maximum temperature [degrees C] (Tmax)
+   - vapor pressure [kPa] (Tdew)
+   - wind speed [ms-1] (windspeed)
+   - precipitation [mm day-1] (ppt)
 3. **soil - soil parameters**
 4. **control - model start, latitude, elevation**
 
