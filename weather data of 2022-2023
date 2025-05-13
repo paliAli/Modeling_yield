@@ -1,0 +1,40 @@
+#input weahter data
+install.packages("nasapower")
+library(nasapower)
+library(ggplot2)
+library(dplyr)
+
+#define the longtitude and latitude of europa
+latitudes <- seq(35, 72, by = 1)
+longitudes <- seq(-30, 50, by = 1) 
+
+#define a sowing date and a harvest date
+startDate <- "2022-01-01"
+endDate <- "2023-01-01"
+dates <- c(startDate, endDate)
+
+#download the data from NASA POWER
+Variables <- c("ALLSKY_SFC_SW_DWN", "PRECTOTCORR", "RH2M", "T2MDEW", "T2M_MAX", "T2M_MIN", "WS2M")
+VarName <- c("Solar", "ppt", "RH", "Tdew", "Tmax", "Tmin", "windspeed")
+
+#download the data from NASA POWER
+Europe_weather_data <- data.frame()
+
+for (lat in latitudes) {
+  for (lon in longitudes) {
+    data <- nasapower::get_power(
+      community = "ag",
+      lonlat = c(lon, lat),
+      pars = Variables,
+      dates =dates, 
+      temporal_api = "daily"
+    )
+    Europe_weather_data <- rbind(Europe_weather_data, data)
+  }
+}
+#save the data
+write.csv(Europe_weather_data, "Europe_weather_data.csv", row.names = FALSE)
+#read the data
+Europe_weather_data <- read.csv("Europe_weather_data.csv")
+#convert the date to Date type
+Europe_weather_data$Date <- as.Date(Europe_weather_data$Date)
