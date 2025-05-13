@@ -9,8 +9,8 @@ latitudes <- seq(35, 72, by = 1)
 longitudes <- seq(-30, 50, by = 1) 
 
 #define a sowing date and a harvest date
-startDate <- "2022-01-01"
-endDate <- "2023-01-01"
+startDate <- "2023-01-01"
+endDate <- "2025-01-01"
 dates <- c(startDate, endDate)
 
 #download the data from NASA POWER
