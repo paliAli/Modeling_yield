@@ -8,6 +8,14 @@ Simulate (potential) crop yield of winter wheat
 - create a time series
 - simulate crop yield in the future under different climate scenarios
 
+## To-do:
+[x] Obtain the weather data from NASA 
+[] Create rasters of Europe 
+[] Create the basic crop model
+[] Create a basic soil model
+[] Combine the crop and soil model
+[] Simulate growth of WW in Europe
+
 ## Structure of the repository
 Input_data: contains the data on climate, soil, sowing dates
 
@@ -65,7 +73,7 @@ https://github.com/ajwdewit/WOFOST_crop_parameters/blob/master/wheat.yaml
    - solar radiation [kJ m-2 day-1] (Solar)
    - minimum temperature [degrees C] (Tmin)
    - maximum temperature [degrees C] (Tmax)
-   - vapor pressure [kPa] (Tdew)
+   - vapor pressure [kPa] - used dew temperature instead (Tdew) **Is that ok?**
    - wind speed [ms-1] (windspeed)
    - precipitation [mm day-1] (ppt)
 3. **soil - soil parameters**
@@ -83,6 +91,12 @@ The model has 8 state variables:
 
 TSUM is calculated by interpolating Tavg = (Tmin + Tmax)/2
 
+### Weather data preparation
+Obtain day of the year (doy)
+
+Calculate average temperature
+
+
 ### Development stage calculation
 DVS = 0 → Emergence
 
@@ -94,3 +108,5 @@ DVS = 2 → Maturity (after reaching TSUM1 + TSUM2)
 
 - Tavg accumulates each day to get TSUM
 - DVS was interpolated from known (TSUM, DVS) pairs using approx()
+
+
