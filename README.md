@@ -9,12 +9,12 @@ Simulate (potential) crop yield of winter wheat
 - simulate crop yield in the future under different climate scenarios
 
 ## To-do:
-[x] Obtain the weather data from NASA 
-[] Create rasters of Europe 
-[] Create the basic crop model
-[] Create a basic soil model
-[] Combine the crop and soil model
-[] Simulate growth of WW in Europe
+- [x] Obtain the weather data from NASA 
+- [] Create rasters of Europe 
+- [] Create the basic crop model
+- [] Create a basic soil model
+- [] Combine the crop and soil model
+- [] Simulate growth of WW in Europe
 
 ## Structure of the repository
 Input_data: contains the data on climate, soil, sowing dates
@@ -109,4 +109,6 @@ DVS = 2 → Maturity (after reaching TSUM1 + TSUM2)
 - Tavg accumulates each day to get TSUM
 - DVS was interpolated from known (TSUM, DVS) pairs using approx()
 
+Crop and weather data were imported
+Function approx() inside a for loop was used to interpolate development stage of winter wheat depending on the total sum of temperatures
 
