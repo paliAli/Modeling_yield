@@ -55,6 +55,7 @@ https://www.wur.nl/en/Research-Results/Research-Institutes/Environmental-Researc
    -  RMS - relative maintenance respiration rate of stems ['d-1']
    -  RGRLAI - maximum relative increase in LAI ['d-1']
    -  Q10 - relative increase in respiration rate per 10 degrees Celsius temperature increase
+   -  Ce - light use efficiency
   
    For modeling yield under different climate change scenarios:
    - root_depth_max – Deep rooting helps tolerate drought
@@ -90,25 +91,3 @@ The model has 8 state variables:
 8. DVS: the crop development stage [unitless] 
 
 TSUM is calculated by interpolating Tavg = (Tmin + Tmax)/2
-
-### Weather data preparation
-Obtain day of the year (doy)
-
-Calculate average temperature
-
-
-### Development stage calculation
-DVS = 0 → Emergence
-
-
-DVS = 1 → Anthesis (after reaching TSUM1)
-
-
-DVS = 2 → Maturity (after reaching TSUM1 + TSUM2)
-
-- Tavg accumulates each day to get TSUM
-- DVS was interpolated from known (TSUM, DVS) pairs using approx()
-
-Crop and weather data were imported
-Function approx() inside a for loop was used to interpolate development stage of winter wheat depending on the total sum of temperatures
-
