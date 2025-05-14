@@ -5,7 +5,6 @@
 ##%######################################################%##
 
 -----------------------------------------------------------
-  # Written by YiQiao Wang and Alena Pavlackova
   # ETH Biogeochemical modeling group project
   
   # The script provides daily weather data
@@ -30,7 +29,6 @@ dates <- c(startDate, endDate)
 # Download the data from NASA POWER ----
 Variables <- c("ALLSKY_SFC_SW_DWN", "PRECTOTCORR", "RH2M", "T2MDEW", "T2M_MAX", "T2M_MIN", "WS2M")
 VarName <- c("Solar", "ppt", "RH", "Tdew", "Tmax", "Tmin", "windspeed")
-
 
 # Download the data from NASA POWER
 Europe_weather_data <- data.frame()
@@ -67,4 +65,4 @@ Europe_weather_data <- Europe_weather_data %>%
 #save the data
 write.csv(Europe_weather_data, "~/Github/Modeling_yield/Europe_weather_data.csv", row.names = FALSE)
 
-
+# Create a data frame for each pixel (lon and lat pair)

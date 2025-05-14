@@ -16,7 +16,7 @@ library(deSolve)
 library(ggplot2)
 
 # Load in crop data
-crop <- source("Input_data/crop_data.R")
+source("Input_data/crop_data.R")
 # Import the weather data ----
 weather <- read.csv("Input_data/DVS_weather.csv")
 

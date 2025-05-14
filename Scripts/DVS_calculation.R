@@ -20,7 +20,7 @@ library(dplyr)
 # Set working directory 
 setwd("~/GitHub/Modeling_yield")
 # Load in crop data
-crop <- source("Input_data/crop_data.R")
+source("Input_data/crop_data.R")
 
 # Define crop TSUM thresholds ----
 TSUM_stages <- c(crop$TSUMEM,crop$TSUMEM + crop$TSUM1, crop$TSUMEM + crop$TSUM1 + crop$TSUM2) # Cumulative TSUM values
