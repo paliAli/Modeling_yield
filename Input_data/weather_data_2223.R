@@ -21,7 +21,7 @@ latitudes <- seq(35, 72, by = 1) # Just to check - need to change later
 longitudes <- seq(-30, 50, by = 1) 
 
 # Define a sowing date and a harvest date
-startDate <- "2024-01-01"
+startDate <- "2024-01-01" # Change it to be the same as the growing season
 endDate <- "2025-01-01"
 dates <- c(startDate, endDate)
 
