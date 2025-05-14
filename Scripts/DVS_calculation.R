@@ -4,13 +4,13 @@
 #                                                          #
 ##%######################################################%##
 
------------------------------------------------------------
+#-----------------------------------------------------------
   # Written by Alena Pavlackova
   # ETH Biogeochemical modeling group project
   
   # The script calculates the total temperature sum
   # and changes the DVS accordingly
------------------------------------------------------------
+#-----------------------------------------------------------
 
 # Required libraries -----
 library(ggplot2)
@@ -28,10 +28,8 @@ DVS_stages <- c(0, 1, 2) # Corresponding development stages
 
 # Import the weather data
 weather <- read.csv("Input_data/Europe_weather_data_test.csv")
-weather <- weather[weather$YEAR == "2024",]
+#weather <- weather[weather$YEAR == "2024",]
 
-?cumsum
-?approx
 
 # Compute TSUM and DVS for each location
 DVS_weather <- weather %>%
@@ -59,5 +57,4 @@ DVS_weather$ID <- paste0(DVS_weather$LON, "_", DVS_weather$LAT)
 
 Unique_ID <- unique(DVS_weather$ID)
 
-weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[1],]
-
+# weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[1],]

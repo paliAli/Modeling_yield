@@ -4,12 +4,12 @@
 #                                                          #
 ##%######################################################%##
 
------------------------------------------------------------
+#-----------------------------------------------------------
   # Written by Alena Pavlackova
   # ETH Biogeochemical modeling group project
   
   # The script calculates the biomass production from photosynthesis
-  -----------------------------------------------------------
+#-----------------------------------------------------------
 
 # Required libraries ----
 library(deSolve)
@@ -101,6 +101,10 @@ crop_growth <- function(t, state, parameters){
     # LAI growth (based on SLA and max relative rate)
     dLAI <- min(RGRLAI * LAI_now, SLA * dWLV) # SLA = specific leaf area in ha/kg
     
+    # Stop growth when RN is below a threshold and DVS reaches the end stage
+    if (RN < 0.01 & DVS_now == 3) { 
+      return(NULL) # Stop simulation
+    }
   
     return(list(
       c(dWLV, dWST, dWRT, dWSO, dLAI),
@@ -111,38 +115,7 @@ crop_growth <- function(t, state, parameters){
   })
 }
 
-# Run the model ----
-out <- ode(y = state, times = times, func = crop_growth, parms = crop)
-
-# Convert the output to a data frame
-out_df <- as.data.frame(out)
-
-# Plot the results ----
-ggplot(out_df, aes(x = time)) +
-  geom_line(aes(y = WLV, color = "Leaf weight"), linewidth = 1.2) +
-  geom_line(aes(y = WST, color = "Stem weight"), linewidth = 1.2) +
-  geom_line(aes(y = WRT, color = "Root weight"), linewidth = 1.2) +
-  geom_line(aes(y = WSO, color = "Storage weight"), linewidth = 1.2) +
-  labs(title = "Biomass Production Over Time",
-       x = "Time",
-       y = "Weight (kg/ha)") +
-  scale_color_manual(values = c("Leaf weight" = "green",
-                                  "Stem weight" = "brown",
-                                  "Root weight" = "blue",
-                                  "Storage weight" = "orange")) +
-  theme(axis.ticks = element_line(linetype = "blank"),
-        axis.text.x = element_text(size = 0)) +
-  theme_minimal() 
-
-# Only plot LAI
-ggplot(out_df, aes(x = time, y = LAI)) +
-  geom_line(color = "purple", linewidth = 1.2) +
-  labs(title = "Leaf Area Index (LAI) Over Time",
-       x = "Time",
-       y = "LAI") +
-  theme(axis.ticks = element_line(linetype = "blank"),
-        axis.text.x = element_text(size = 0)) +
-  theme_minimal()
+source("Input_data/Sowing_dates_function.R") # Import function to find sowing dates
 
 # Run the model for each location ----
 # Loop the ode function through each weather subset
@@ -171,3 +144,30 @@ biomass_files <- list.files(path = "Output", pattern = "biomass_production_", fu
 biomass_data <- lapply(biomass_files, read.csv)
 
 biomass_data[[1]]
+
+# Plot the results ----
+ggplot(out_df, aes(x = time)) +
+  geom_line(aes(y = WLV, color = "Leaf weight"), linewidth = 1.2) +
+  geom_line(aes(y = WST, color = "Stem weight"), linewidth = 1.2) +
+  geom_line(aes(y = WRT, color = "Root weight"), linewidth = 1.2) +
+  geom_line(aes(y = WSO, color = "Storage weight"), linewidth = 1.2) +
+  labs(title = "Biomass Production Over Time",
+       x = "Time",
+       y = "Weight (kg/ha)") +
+  scale_color_manual(values = c("Leaf weight" = "green",
+                                "Stem weight" = "brown",
+                                "Root weight" = "blue",
+                                "Storage weight" = "orange")) +
+  theme(axis.ticks = element_line(linetype = "blank"),
+        axis.text.x = element_text(size = 0)) +
+  theme_minimal() 
+
+# Only plot LAI
+ggplot(out_df, aes(x = time, y = LAI)) +
+  geom_line(color = "purple", linewidth = 1.2) +
+  labs(title = "Leaf Area Index (LAI) Over Time",
+       x = "Time",
+       y = "LAI") +
+  theme(axis.ticks = element_line(linetype = "blank"),
+        axis.text.x = element_text(size = 0)) +
+  theme_minimal()
