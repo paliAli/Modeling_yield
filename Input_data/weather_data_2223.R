@@ -17,8 +17,13 @@ library(lubridate)
 
 # Define the main variables ----
 # Define the longtitude and latitude of europa （i dont know how to get the lonlat from gps?）
-latitudes <- seq(35, 72, by = 1) # Just to check - need to change later
-longitudes <- seq(-30, 50, by = 1) 
+#latitudes <- seq(35, 72, by = 1) # Just to check - need to change later
+#longitudes <- seq(-30, 50, by = 1) 
+
+#load specific coordinates
+source("Input_data/LowerResolution.R")
+latitudes <- Wanted_Points$y
+longitudes <- Wanted_Points$x
 
 # Define a sowing date and a harvest date
 startDate <- "2024-01-01" # Change it to be the same as the growing season
