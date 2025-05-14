@@ -18,7 +18,7 @@ library(ggplot2)
 # Load in crop data
 source("Input_data/crop_data.R")
 # Import the weather data ----
-weather <- read.csv("Input_data/DVS_weather.csv")
+source("Scripts/DVS_calculation.R")
 
 # Initial states ----
 initial_leaf_weight <- 0.1
@@ -33,15 +33,15 @@ state <- c(WLV = initial_leaf_weight,
            WSO = initial_storage_weight,
            LAI = initial_LAI)
 
-any(is.na(weather))
-which(is.na(weather))
+any(is.na(DVS_weather))
+which(is.na(DVS_weather))
 # Remove NAs from the weather dataset
-weather <- weather[complete.cases(weather), ]
+DVS_weather <- DVS_weather[complete.cases(DVS_weather), ]
 
 # Define the time step
 time_step <- 1 # in days
 # Define the number of time steps
-num_steps <- nrow(weather) # Number of observed days
+num_steps <- nrow(DVS_weather) # Number of observed days
 
 times <- seq(1, num_steps, by = time_step) # Time vector
 
@@ -51,9 +51,9 @@ crop_growth <- function(t, state, parameters){
   with(as.list(c(state, crop)),{
     # Get current weather values
     day <- floor(t)
-    Tmean <- weather$Tmean[day]
-    SR <- weather$Solar[day]
-    DVS_now <- weather$DVS_stage[day]
+    Tmean <- weather_subset$Tmean[day]
+    SR <- weather_subset$Solar[day]
+    DVS_now <- weather_subset$DVS_stage[day]
     LAI_now <- state["LAI"]
     
     if (any(is.na(c(Tmean, SR, DVS_now, LAI_now)))) {
@@ -144,16 +144,30 @@ ggplot(out_df, aes(x = time, y = LAI)) +
         axis.text.x = element_text(size = 0)) +
   theme_minimal()
 
-# For later when the coordinates are grouped into countries?
-# Define a function to run the model for a single region
-#run_model_for_region <- function(region_weather) {
-  # Define time vector based on the number of days in the region weather data
-  #num_steps <- nrow(region_weather)
-  #times <- seq(1, num_steps, by = 1)
+# Run the model for each location ----
+# Loop the ode function through each weather subset
+for(i in 1:length(Unique_ID)) {
+  weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[i],]
+  
+  # Define the time step
+  time_step <- 1 # in days
+  # Define the number of time steps
+  num_steps <- nrow(weather_subset) # Number of observed days
+  
+  times <- seq(1, num_steps, by = time_step) # Time vector
   
   # Run the model
-  #out <- ode(y = state, times = times, func = crop_growth, parms = crop)
+  out <- ode(y = state, times = times, func = crop_growth, parms = crop)
   
-  # Return the output
-  #return(out)
-#}
+  # Convert the output to a data frame
+  out_df <- as.data.frame(out)
+  
+  # Save the output to a CSV file
+  write.csv(out_df, paste0("Output/biomass_production_", Unique_ID[i], ".csv"), row.names = FALSE)
+}
+
+# Import the csvs as data frames
+biomass_files <- list.files(path = "Output", pattern = "biomass_production_", full.names = TRUE)
+biomass_data <- lapply(biomass_files, read.csv)
+
+biomass_data[[1]]

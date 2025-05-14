@@ -54,3 +54,10 @@ ggplot(data = DVS_weather, aes(x = DOY, y = DVS_stage, color = paste(LON, LAT)))
   theme_minimal() +
   theme(legend.position = "none") # Remove legend for clarity
 
+# Create a identifier column for the weather
+DVS_weather$ID <- paste0(DVS_weather$LON, "_", DVS_weather$LAT)
+
+Unique_ID <- unique(DVS_weather$ID)
+
+weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[1],]
+

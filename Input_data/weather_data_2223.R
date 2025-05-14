@@ -11,7 +11,6 @@
   -----------------------------------------------------------
 
 # Load the required libraries ----
-install.packages("nasapower")
 library(nasapower)
 library(dplyr)
 library(lubridate)
@@ -65,4 +64,5 @@ Europe_weather_data <- Europe_weather_data %>%
 #save the data
 write.csv(Europe_weather_data, "~/Github/Modeling_yield/Europe_weather_data.csv", row.names = FALSE)
 
-# Create a data frame for each pixel (lon and lat pair)
+
+
