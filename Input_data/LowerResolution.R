@@ -1,6 +1,6 @@
 # This script resamples the map file to a lower resolution to make it feasible for the analysis
 # The original map file is 100 x 100m, the resampled file is 1 x 1 km
-setwd("~/Macbook/Studium/Master/Biogeochem. Modeling")
+source("Input_data/aggregates_landcover_raster_1x1km.tif")
 
 
 install.packages(c("viridisLite", "ggpubr"), type= "binary")
