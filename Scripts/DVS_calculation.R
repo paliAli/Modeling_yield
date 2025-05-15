@@ -27,7 +27,7 @@ TSUM_stages <- c(crop$TSUMEM,crop$TSUMEM + crop$TSUM1, crop$TSUMEM + crop$TSUM1 
 DVS_stages <- c(0, 1, 2) # Corresponding development stages
 
 # Import the weather data
-weather <- read.csv("Input_data/Europe_weather_data_test.csv")
+weather <- read.csv("Input_data/Europe_weather_data.csv")
 #weather <- weather[weather$YEAR == "2024",]
 
 

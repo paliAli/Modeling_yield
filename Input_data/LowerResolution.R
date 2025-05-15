@@ -1,10 +1,11 @@
 # This script resamples the map file to a lower resolution to make it feasible for the analysis
+
+# install.packages(c("viridisLite", "ggpubr"), type= "binary")
+# install.packages("maptools", type= "binary")
+
 # The original map file is 100 x 100m, the resampled file is 1 x 1 km
-source("Input_data/aggregated_landcover_raster_1x1km.tif")
+# source("Input_data/aggregated_landcover_raster_1x1km.tif")
 
-
-install.packages(c("viridisLite", "ggpubr"), type= "binary")
-install.packages("maptools", type= "binary")
 
 library(readxl)
 library(ggplot2)
@@ -20,7 +21,7 @@ library(raster)
 
 #original pixel size 100 x 100m
 
-map=raster("aggregated_landcover_raster_1x1km.tif")
+map=raster("Input_data/aggregated_landcover_raster_1x1km.tif")
 res(map)
 crs(map)
 
@@ -34,7 +35,7 @@ agg_factor <- 50
 aggregated_raster <- aggregate(map, fact = agg_factor, fun = modal)
 
 # Save the aggregated raster
-writeRaster(aggregated_raster, "aggregated_landcover_raster_50x50km.tif", format = "GTiff")
+writeRaster(aggregated_raster, "Input_data/aggregated_landcover_raster_50x50km.tif", format = "GTiff")
 
 # Plot the aggregated raster
 plot(aggregated_raster)
@@ -73,7 +74,7 @@ Wanted_Points$Land_Use[Wanted_Points$Land_Use==26]<- "Natural grasslands"
 Wanted_Points$Land_Use[Wanted_Points$Land_Use==22]<- "Agroforestry areas"
 
 # Store the data frame in a CSV file
-write.table(Wanted_Points, "../../Wanted_Grassland_Points10km.csv", row.names = FALSE,sep=";")
+write.table(Wanted_Points, "Input_data/Wanted_Grassland_Points10km.csv", row.names = FALSE,sep=";")
 
 
 
