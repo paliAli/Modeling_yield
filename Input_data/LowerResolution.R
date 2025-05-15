@@ -14,6 +14,7 @@ library(viridis)
 library(maptools)
 library(ggpubr)
 library(raster)
+library(terra)
 # library(rgdal)
 # library(sp)
 
@@ -63,8 +64,6 @@ plot(Wanted_Points$y~Wanted_Points$x, pch=20, col="red", xlab="X", ylab="Y", mai
 str(Wanted_Points)
 
 
-
-
 # Rename the land use column
 colnames(Wanted_Points)[3]<- "Land_Use"
 
@@ -77,7 +76,25 @@ Wanted_Points$Land_Use[Wanted_Points$Land_Use==22]<- "Agroforestry areas"
 write.table(Wanted_Points, "Input_data/Wanted_Grassland_Points10km.csv", row.names = FALSE,sep=";")
 
 
+# Convert the coordinates from the raster CRS to geographic coordinates (WGS84) ----
+# Create a SpatVector from the wanted points
+wanted_points_vect <- vect(Wanted_Points[, c("x", "y")], crs = crs(aggregated_raster))
 
+# Transform the coordinates to WGS84 (EPSG:4326)
+wanted_points_wgs84 <- project(wanted_points_vect, "EPSG:4326")
+
+# Add the transformed coordinates back to the data frame
+Wanted_Points$Longitude <- geom(wanted_points_wgs84)[, "x"]
+Wanted_Points$Latitude <- geom(wanted_points_wgs84)[, "y"]
+
+# Inspect the transformed points
+head(Wanted_Points)
+
+# Plot the transformed points (latitude and longitude)
+plot(Wanted_Points$Latitude ~ Wanted_Points$Longitude, 
+     pch = 20, col = "blue", 
+     xlab = "Longitude", ylab = "Latitude", 
+     main = "Wanted Points in WGS84")
 
 
 
