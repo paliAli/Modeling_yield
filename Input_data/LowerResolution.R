@@ -14,8 +14,7 @@ library(viridis)
 library(maptools)
 library(ggpubr)
 library(raster)
-library(terra)
-# library(rgdal)
+library(rgdal)
 # library(sp)
 
 
@@ -77,31 +76,26 @@ write.table(Wanted_Points, "Input_data/Wanted_Grassland_Points10km.csv", row.nam
 
 
 # Convert the coordinates from the raster CRS to geographic coordinates (WGS84) ----
-# Create a SpatVector from the wanted points
-wanted_points_vect <- vect(Wanted_Points[, c("x", "y")], crs = crs(aggregated_raster))
+# Define the source and target CRS
+source_crs <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+target_crs <- "+proj=longlat +datum=WGS84 +no_defs"
 
-# Transform the coordinates to WGS84 (EPSG:4326)
-wanted_points_wgs84 <- project(wanted_points_vect, "EPSG:4326")
+# Create a spatial object from the Wanted_Points data frame
+coordinates(Wanted_Points) <- ~x + y
+proj4string(Wanted_Points) <- source_crs
 
-# Add the transformed coordinates back to the data frame
-Wanted_Points$Longitude <- geom(wanted_points_wgs84)[, "x"]
-Wanted_Points$Latitude <- geom(wanted_points_wgs84)[, "y"]
+# Transform the coordinates to the target CRS (WGS84)
+Wanted_Points_transformed <- spTransform(Wanted_Points, target_crs)
 
-# Inspect the transformed points
+# Extract the transformed coordinates and add them back to the data frame
+Wanted_Points$Longitude <- coordinates(Wanted_Points_transformed)[, 1]
+Wanted_Points$Latitude <- coordinates(Wanted_Points_transformed)[, 2]
+
+# Inspect the updated data frame
 head(Wanted_Points)
 
-# Plot the transformed points (latitude and longitude)
+# Plot the transformed points
 plot(Wanted_Points$Latitude ~ Wanted_Points$Longitude, 
      pch = 20, col = "blue", 
      xlab = "Longitude", ylab = "Latitude", 
      main = "Wanted Points in WGS84")
-
-
-
-
-
-
-
-
-
-

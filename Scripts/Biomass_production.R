@@ -143,10 +143,10 @@ for(i in 1:length(Unique_ID)) {
 biomass_files <- list.files(path = "Output", pattern = "biomass_production_", full.names = TRUE)
 biomass_data <- lapply(biomass_files, read.csv)
 
-biomass_data[[1]]
+test <- biomass_data[[1]]
 
 # Plot the results ----
-ggplot(out_df, aes(x = time)) +
+ggplot(test, aes(x = time)) +
   geom_line(aes(y = WLV, color = "Leaf weight"), linewidth = 1.2) +
   geom_line(aes(y = WST, color = "Stem weight"), linewidth = 1.2) +
   geom_line(aes(y = WRT, color = "Root weight"), linewidth = 1.2) +
@@ -163,7 +163,7 @@ ggplot(out_df, aes(x = time)) +
   theme_minimal() 
 
 # Only plot LAI
-ggplot(out_df, aes(x = time, y = LAI)) +
+ggplot(test, aes(x = time, y = LAI)) +
   geom_line(color = "purple", linewidth = 1.2) +
   labs(title = "Leaf Area Index (LAI) Over Time",
        x = "Time",

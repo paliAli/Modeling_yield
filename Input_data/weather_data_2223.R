@@ -24,8 +24,8 @@ setwd("~/GitHub/Modeling_yield")
 
 #load specific coordinates
 source("Input_data/LowerResolution.R")
-latitudes <- Wanted_Points$y
-longitudes <- Wanted_Points$x
+latitudes <-  Wanted_Points$Latitude
+longitudes <- Wanted_Points$Longitude
 
 # Define a sowing date and a harvest date
 startDate <- "2022-01-01" # Change it to be the same as the growing season
@@ -69,7 +69,7 @@ Europe_weather_data <- Europe_weather_data %>%
   )
 
 #save the data
-write.csv(Europe_weather_data, "~/Github/Modeling_yield/Europe_weather_data.csv", row.names = FALSE)
+write.csv(Europe_weather_data, "Input_data/Europe_weather_data.csv", row.names = FALSE)
 
 
 
