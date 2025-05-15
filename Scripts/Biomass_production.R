@@ -15,6 +15,8 @@
 library(deSolve)
 library(ggplot2)
 
+setwd("~/GitHub/Modeling_yield")
+
 # Load in crop data
 source("Input_data/crop_data.R")
 # Import the weather data ----
@@ -116,6 +118,9 @@ crop_growth <- function(t, state, parameters){
 }
 
 source("Input_data/Sowing_dates_function.R") # Import function to find sowing dates
+
+# Select only year 2024 from DVS_weather
+DVS_weather <- DVS_weather[DVS_weather$YEAR == 2024,]
 
 # Run the model for each location ----
 # Loop the ode function through each weather subset
