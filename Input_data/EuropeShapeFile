@@ -1,0 +1,85 @@
+rm(list = ls())
+
+##
+##downlaod the map from geoBoundaries########
+#this one is complicated
+install.packages("geodata")
+install.packages("sf")
+library(geodata)
+library(sf)
+
+#dowload the worldshapefile from geoBoundaries
+#read the worldshapefile
+worldshapefile <- st_read("C:/Users/Lilma wang/Downloads/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp")
+
+##Europe mainland
+europe_mainland <- c("France","Germany" , "Spain","Italy",                 
+                     "Poland","Ukraine", "Netherlands","Belgium" ,"Switzerland" ,"Austria","Czechia" ,"Slovakia","Hungary" ,"Romania" , "Bulgaria" , "Serbia" , "Croatia", "Bosnia and Herzegovina","Slovenia" , "Montenegro","North Macedonia","Albania","Greece","Portugal","Norway","Sweden","Finland","Denmark","Estonia","Latvia","Lithuania","Belarus","Moldova","Luxembourg","Liechtenstein","Andorr","San Marino","Monaco","Vatican","Malta","Ireland","Iceland", "United Kingdom"  )
+
+EuropeMainland <- worldshapefile[worldshapefile$NAME %in% europe_mainland, ]
+plot(EuropeMainland$geometry)
+
+#get the longtitude and latitude of the shapefile
+EuropeMainland <- st_transform(EuropeMainland, crs = 4326)
+dataofboundary <- st_coordinates(EuropeMainland)
+
+#the longtitude and latitude of the shapefile
+longtitude <- dataofboundary[, 1]
+latitude <- dataofboundary[, 2]
+
+#the max and min of the longtitude and latitude
+longtitude_max <- max(longtitude)
+longtitude_min <- min(longtitude)
+latitude_max <- max(latitude)
+latitude_min <- min(latitude)
+
+#plot Europe mainland
+plot(EuropeMainland$geometry, main = "Europe mainland")
+
+##use geodata package to download the shapefile########
+#this one is easier
+install.packages("geodata")
+install.packages("terra")
+install.packages("sf")
+library(geodata)
+library(terra)
+library(sf)
+
+#europe mainland
+europe_mainland <- c("France","Germany" , "Spain","Italy",                 
+                     "Poland","Ukraine", "Netherlands","Belgium" ,"Switzerland" ,"Austria","Czechia" ,"Slovakia","Hungary" ,"Romania" , "Bulgaria" , "Serbia" , "Croatia", "Bosnia and Herzegovina","Slovenia" , "Montenegro","North Macedonia","Albania","Greece","Portugal","Norway","Sweden","Finland","Denmark","Estonia","Latvia","Lithuania","Belarus","Moldova","Luxembourg","Liechtenstein","Andorr","San Marino","Monaco","Vatican","Malta","Ireland","Iceland", "United Kingdom"  )
+
+#get country code
+codes <- country_codes()
+europe_codes <- codes[codes$NAME %in% europe_mainland, c(1, 2)]
+
+#download the world shapefile
+?geodata
+#Europa <- gadm(country = europe_mainland,level = 0, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/Input_data/shapefile")
+#UnitedKingdom <- gadm(country = "United Kingdom", level = 0, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/Input_data/shapefile")
+#plot(UnitedKingdom)
+
+Europa <- NULL
+
+#get the shapefile of each country
+for(i in europe_codes$ISO3){
+  shapefile <- gadm(i,level = 0, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/Input_data/shapefile")
+  if (is.null(Europa)) {
+    Europa <- shapefile
+  }else{
+    Europa <- rbind(Europa, shapefile)
+  }
+}
+
+#plot Europe
+plot(Europa)
+
+#get the max and min longtitude and latitude
+boundary <- ext(Europa)
+min_longtitude <- boundary[1] #-31.3
+max_longtitude <- boundary[2] # 40.2
+min_latitude <- boundary[3] # 27.6
+max_latitude <- boundary[4] # 71.2
+
+# 检查哪些国家名不在 geodata 支持的列表中
+#(setdiff(europe_mainland, valid_names))
