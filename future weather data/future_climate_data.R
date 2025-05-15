@@ -135,7 +135,7 @@ prec2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "prec", 10, path = 
 tmin2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmin", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
 
 #climate in europe. 
-tmax_europe <- crop(tmax2021_2040,  ext(-31.3,40.2,27.6,71.2)y)
+tmax_europe <- crop(tmax2021_2040,  ext(-31.3,40.2,27.6,71.2))
 tmin_europe <- crop(tmin2021_2040,  ext(-31.3,40.2,27.6,71.2))
 prec_europe <- crop(prec2021_2040,  ext(-31.3,40.2,27.6,71.2))
 
