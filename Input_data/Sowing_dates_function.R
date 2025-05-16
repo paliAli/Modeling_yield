@@ -1,5 +1,8 @@
 # Function to find the sowing date for a weather subset
 find_sowing_date <- function(weather_data) {
+  # Ensure the Date column is in Date format
+  weather_data$Date <- as.Date(weather_data$Date)
+  
   # Extract the unique years in the weather data
   unique_years <- unique(weather_data$YEAR)
   
@@ -17,6 +20,8 @@ find_sowing_date <- function(weather_data) {
     
     # Store the closest sowing date
     sowing_dates <- c(sowing_dates, closest_date)
+    # Convert numeric sowing dates to readable dates
+    sowing_dates <- as.Date(sowing_dates)
   }
   
   return(sowing_dates)

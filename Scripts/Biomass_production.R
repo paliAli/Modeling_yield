@@ -20,7 +20,10 @@ setwd("~/GitHub/Modeling_yield")
 # Load in crop data
 source("Input_data/crop_data.R")
 # Import the weather data ----
-source("Scripts/DVS_calculation.R")
+source("Scripts/Weather_preparation.R")
+# Import the biomass model function
+source("Input_data/Biomass_function.R")
+
 
 # Initial states ----
 initial_leaf_weight <- 0.1
@@ -33,115 +36,58 @@ state <- c(WLV = initial_leaf_weight,
            WST = initial_stem_weight,
            WRT = initial_root_weight,
            WSO = initial_storage_weight,
-           LAI = initial_LAI)
+           LAI = initial_LAI,
+           DVS = crop$DVSI,
+           TSUM = 0) 
 
-any(is.na(DVS_weather))
-which(is.na(DVS_weather))
+# Create parameters list
+parameters <- c(crop, list(TSUM_stages = TSUM_stages, DVS_stages = DVS_stages))
+
+any(is.na(weather))
+which(is.na(weather))
 # Remove NAs from the weather dataset
-DVS_weather <- DVS_weather[complete.cases(DVS_weather), ]
+weather <- weather[complete.cases(weather), ]
 
-# Define the time step
-time_step <- 1 # in days
-# Define the number of time steps
-num_steps <- nrow(DVS_weather) # Number of observed days
+# Import the function to find sowing dates
+source("Input_data/Sowing_dates_function.R") 
+# Import the event function
+source("Input_data/Event_function.R")
 
-times <- seq(1, num_steps, by = time_step) # Time vector
-
-
-# Define the model ----
-crop_growth <- function(t, state, parameters){
-  with(as.list(c(state, crop)),{
-    # Get current weather values
-    day <- floor(t)
-    Tmean <- weather_subset$Tmean[day]
-    SR <- weather_subset$Solar[day]
-    DVS_now <- weather_subset$DVS_stage[day]
-    LAI_now <- state["LAI"]
-    
-    if (any(is.na(c(Tmean, SR, DVS_now, LAI_now)))) {
-      stop("NA values in weather data or state vector")
-    }
-    
-    # Calculate required variables 
-    # Convert total radiation to PAR
-    PAR <- 0.5 * SR  # About 50% of incoming radiation is PAR (Photosynthetically Active Radiation)
-    
-    # Intercepted PAR using Beer’s Law
-    fPAR <- 1 - exp(-k * LAI_now)  # k = light extinction coefficient
-    
-    # Simplified calculation of photosynthesis
-    Rd <- Ce * PAR * fPAR # gross assimilation in kg/ha/day
-    
-    # Maintenance respiration
-    RM_25 <- WLV*RML + WST*RMS + WRT*RMR + WSO*RMO
-    RM <- RM_25 * Q10^((Tmean - 25)/10) # maintenance respiration in kg/ha/day
-    
-    # Net biomass assimilation
-    if (RM > Rd) {
-      RM <- Rd # The maintenance respiration cannot exceed the gross assimilation
-    }
-    RN <- Rd - RM # net assimilation in kg/ha/day
-    
-    print(paste("Rd:", Rd, "RM:", RM, "RN:", RN))
-    
-    if (is.na(RN)) {
-      stop("RN is NA. Check Rd and RM.")
-    }
-    
-    # Partitioning (interpolated from tables based on DVS)
-    FL <- approx(FLTB_df$DVS, FLTB_df$Value, xout = DVS_now, rule = 2)$y
-    FS <- approx(FSTB_df$DVS, FSTB_df$Value, xout = DVS_now, rule = 2)$y
-    FR <- approx(FRTB_df$DVS, FRTB_df$Value, xout = DVS_now, rule = 2)$y
-    FO <- approx(FOTB_df$DVS, FOTB_df$Value, xout = DVS_now, rule = 2)$y
-    
-    # Biomass growth
-    dWLV <- RN * FL #* CVL I would use this if I want to calculate carbon content (?)
-    dWST <- RN * FS #* CVS
-    dWRT <- RN * FR #* CVR
-    dWSO <- RN * FO #* CVO
-    
-    # LAI growth (based on SLA and max relative rate)
-    dLAI <- min(RGRLAI * LAI_now, SLA * dWLV) # SLA = specific leaf area in ha/kg
-    
-    # Stop growth when RN is below a threshold and DVS reaches the end stage
-    if (RN < 0.01 & DVS_now == 3) { 
-      return(NULL) # Stop simulation
-    }
-  
-    return(list(
-      c(dWLV, dWST, dWRT, dWSO, dLAI),
-      Rd = Rd,
-      RN = RN,
-      DVS = DVS_now
-    ))
+# Define the root function
+rootfun <- function(t, state, parms) {
+  with(as.list(state), {
+    DVS - 2  # Root is found when DVS = 2
   })
 }
 
-source("Input_data/Sowing_dates_function.R") # Import function to find sowing dates
-
-# Select only year 2024 from DVS_weather
-DVS_weather <- DVS_weather[DVS_weather$YEAR == 2024,]
-
 # Run the model for each location ----
-# Loop the ode function through each weather subset
-for(i in 1:length(Unique_ID)) {
-  weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[i],]
+# Loop the ode function through each weather subset for the growing season
+for (i in 1:length(Unique_ID)) {
+  weather_subset <- weather[weather$ID == Unique_ID[i],]
   
-  # Define the time step
-  time_step <- 1 # in days
-  # Define the number of time steps
-  num_steps <- nrow(weather_subset) # Number of observed days
+  # Find sowing dates
+  sowing_dates <- find_sowing_date(weather_subset)
   
-  times <- seq(1, num_steps, by = time_step) # Time vector
+  for (sowing_date in sowing_dates) {
+    weather_subset_filtered <- weather_subset[weather_subset$Date >= sowing_date,]
+    
+    # Define the timestep
+    timestep <- 1 # Each day
+    # Define the number of time steps
+    num_steps <- nrow(weather_subset_filtered) # Number of observed days
+    # Define the time points for the ODE solver
+    times <- seq(1, num_steps, by = timestep) 
   
-  # Run the model
-  out <- ode(y = state, times = times, func = crop_growth, parms = crop)
-  
-  # Convert the output to a data frame
-  out_df <- as.data.frame(out)
-  
-  # Save the output to a CSV file
-  write.csv(out_df, paste0("Output/biomass_production_", Unique_ID[i], ".csv"), row.names = FALSE)
+    # Run the ODE solver with events
+    out <- ode(y = state, times = times, func = crop_growth, parms = parameters,
+               events = list(func = eventfun, time = times), rootfun = rootfun)
+    
+    # Convert output to a data frame
+    out_df <- as.data.frame(out)
+    
+    # Save the output
+    write.csv(out_df, paste0("Output/biomass_production_", Unique_ID[i], "_", sowing_date, ".csv"), row.names = FALSE)
+  }
 }
 
 # Import the csvs as data frames

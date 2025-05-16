@@ -29,7 +29,7 @@ longitudes <- Wanted_Points$Longitude
 
 # Define a sowing date and a harvest date
 startDate <- "2022-01-01" # Change it to be the same as the growing season
-endDate <- "2025-01-01"
+endDate <- "2024-12-01"
 dates <- c(startDate, endDate)
 
 # Download the data from NASA POWER ----
@@ -61,12 +61,6 @@ summary(Europe_weather_data)
 class(Europe_weather_data$YYYYMMDD)
 # Rename YYYYMMDD to date
 colnames(Europe_weather_data)[colnames(Europe_weather_data) == "YYYYMMDD"] <- "Date"
-
-# Calculate average temperature 
-Europe_weather_data <- Europe_weather_data %>%
-  mutate(
-    Tmean = (Tmax + Tmin) / 2
-  )
 
 #save the data
 write.csv(Europe_weather_data, "Input_data/Europe_weather_data.csv", row.names = FALSE)
