@@ -20,7 +20,7 @@ setwd("~/GitHub/Modeling_yield")
 # Load in crop data
 source("Input_data/crop_data.R")
 # Import the weather data ----
-source("Scripts/Weather_preparation.R")
+source("Scripts/DVS_calculation.R")
 # Import the biomass model function
 source("Input_data/Biomass_function.R")
 
@@ -36,40 +36,43 @@ state <- c(WLV = initial_leaf_weight,
            WST = initial_stem_weight,
            WRT = initial_root_weight,
            WSO = initial_storage_weight,
-           LAI = initial_LAI,
-           DVS = crop$DVSI,
-           TSUM = 0) 
+           LAI = initial_LAI)
+           #DVS = crop$DVSI,
+           #TSUM = 0
 
-# Create parameters list
-parameters <- c(crop, list(TSUM_stages = TSUM_stages, DVS_stages = DVS_stages))
-
-any(is.na(weather))
-which(is.na(weather))
+any(is.na(DVS_weather))
+which(is.na(DVS_weather))
 # Remove NAs from the weather dataset
-weather <- weather[complete.cases(weather), ]
+DVS_weather <- DVS_weather[complete.cases(DVS_weather), ]
 
 # Import the function to find sowing dates
-source("Input_data/Sowing_dates_function.R") 
+#source("Input_data/Sowing_dates_function.R") 
+
 # Import the event function
 source("Input_data/Event_function.R")
 
 # Define the root function
 rootfun <- function(t, state, parms) {
   with(as.list(state), {
-    DVS - 2  # Root is found when DVS = 2
+    # Access DVS_stage from parms
+    current_DVS <- parms$DVS_stage[t]
+    current_DVS - 2  # Root is found when DVS = 2
   })
 }
 
 # Run the model for each location ----
-# Loop the ode function through each weather subset for the growing season
+# Loop the ode function through each coordinate
 for (i in 1:length(Unique_ID)) {
-  weather_subset <- weather[weather$ID == Unique_ID[i],]
+  weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[i],]
   
-  # Find sowing dates
-  sowing_dates <- find_sowing_date(weather_subset)
+  # Find unique seasons (Season_ID) for the current coordinate
+  season_IDs <- unique(weather_subset$Season_ID)
   
-  for (sowing_date in sowing_dates) {
-    weather_subset_filtered <- weather_subset[weather_subset$Date >= sowing_date,]
+  # Loop the ode function through each growing season
+  for (sowing_year in season_IDs) {
+    
+    # Select the rows in the sowing_year
+    weather_subset_filtered <- weather_subset[weather_subset$Season_ID == sowing_year, ]
     
     # Define the timestep
     timestep <- 1 # Each day
@@ -79,14 +82,14 @@ for (i in 1:length(Unique_ID)) {
     times <- seq(1, num_steps, by = timestep) 
   
     # Run the ODE solver with events
-    out <- ode(y = state, times = times, func = crop_growth, parms = parameters,
+    out <- ode(y = state, times = times, func = crop_growth, parms = crop,
                events = list(func = eventfun, time = times), rootfun = rootfun)
     
     # Convert output to a data frame
     out_df <- as.data.frame(out)
     
     # Save the output
-    write.csv(out_df, paste0("Output/biomass_production_", Unique_ID[i], "_", sowing_date, ".csv"), row.names = FALSE)
+    write.csv(out_df, paste0("Output/biomass_production_", Unique_ID[i], "_", sowing_year, ".csv"), row.names = FALSE)
   }
 }
 
@@ -94,7 +97,7 @@ for (i in 1:length(Unique_ID)) {
 biomass_files <- list.files(path = "Output", pattern = "biomass_production_", full.names = TRUE)
 biomass_data <- lapply(biomass_files, read.csv)
 
-test <- biomass_data[[1]]
+test <- biomass_data[[3]]
 
 # Plot the results ----
 ggplot(test, aes(x = time)) +
@@ -102,13 +105,15 @@ ggplot(test, aes(x = time)) +
   geom_line(aes(y = WST, color = "Stem weight"), linewidth = 1.2) +
   geom_line(aes(y = WRT, color = "Root weight"), linewidth = 1.2) +
   geom_line(aes(y = WSO, color = "Storage weight"), linewidth = 1.2) +
+  geom_line(aes(y = WSO.WSO, color = "Yield")) +
   labs(title = "Biomass Production Over Time",
        x = "Time",
        y = "Weight (kg/ha)") +
   scale_color_manual(values = c("Leaf weight" = "green",
                                 "Stem weight" = "brown",
                                 "Root weight" = "blue",
-                                "Storage weight" = "orange")) +
+                                "Storage weight" = "orange",
+                                "Yield" = "salmon")) +
   theme(axis.ticks = element_line(linetype = "blank"),
         axis.text.x = element_text(size = 0)) +
   theme_minimal() 

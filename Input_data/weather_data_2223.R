@@ -28,7 +28,7 @@ latitudes <-  Wanted_Points$Latitude
 longitudes <- Wanted_Points$Longitude
 
 # Define a sowing date and a harvest date
-startDate <- "2022-01-01" # Change it to be the same as the growing season
+startDate <- "2022-10-01" # Change it to be the same as the growing season
 endDate <- "2024-12-01"
 dates <- c(startDate, endDate)
 

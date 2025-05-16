@@ -3,31 +3,14 @@ crop_growth <- function(t, state, parameters){
   with(as.list(c(state, crop)),{
     # Get current weather values
     day <- floor(t)
-    Tmean <- weather_subset$Tmean[day]
-    SR <- weather_subset$Solar[day]
+    Tmean <- weather_subset_filtered$Tmean[day]
+    SR <- weather_subset_filtered$Solar[day]
+    DVS_now <- weather_subset_filtered$DVS_stage[day]
     LAI_now <- state["LAI"]
-    TSUM <- state["TSUM"]  # Current cumulative temperature
-    DVS_now <- state["DVS"]  # Current development stage (DVS)
     
     if (any(is.na(c(Tmean, SR, DVS_now, LAI_now)))) {
       stop("NA values in weather data or state vector")
     }
-    
-    # Apply minimum temperature threshold (base temperature for crop growth)
-    Tbase <- crop$Tbase  # Base temperature (e.g., 0°C for many crops, adjust as needed)
-    dTSUM <- max(Tmean - Tbase, 0) # Only temperatures above Tbase contribute to TSUM
-    TSUM_new <- TSUM + dTSUM
-    
-    # Calculate DVS dynamically based on TSUM
-    DVS_new <- approx(
-      x = TSUM_stages, 
-      y = DVS_stages, 
-      xout = TSUM_new, 
-      rule = 2  # Extrapolate if TSUM goes beyond provided range
-    )$y
-    
-    # Debug prints
-    print(paste("Time:", t, "Tmean:", Tmean, "TSUM:", TSUM, "DVS:", DVS_new))
     
     # Calculate required variables 
     # Convert total radiation to PAR
@@ -49,7 +32,7 @@ crop_growth <- function(t, state, parameters){
     }
     RN <- Rd - RM # net assimilation in kg/ha/day
     
-    #print(paste("Rd:", Rd, "RM:", RM, "RN:", RN))
+    print(paste("Rd:", Rd, "RM:", RM, "RN:", RN))
     
     if (is.na(RN)) {
       stop("RN is NA. Check Rd and RM.")
@@ -70,14 +53,12 @@ crop_growth <- function(t, state, parameters){
     # LAI growth (based on SLA and max relative rate)
     dLAI <- min(RGRLAI * LAI_now, SLA * dWLV) # SLA = specific leaf area in ha/kg
     
-    # Update DVS (rate of change is based on TSUM progression)
-    dDVS <- DVS_new - DVS_now
-    
     return(list(
-      c(dWLV, dWST, dWRT, dWSO, dLAI, dDVS, dTSUM),
+      c(dWLV, dWST, dWRT, dWSO, dLAI),
       Rd = Rd,
       RN = RN,
-      DVS = DVS_new
+      DVS = DVS_now,
+      WSO = state["WSO"] + dWSO  # Accumulated storage organ biomass
     ))
   })
 }

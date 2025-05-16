@@ -1,28 +1,17 @@
 # Function to find the sowing date for a weather subset
 find_sowing_date <- function(weather_data) {
   # Ensure the Date column is in Date format
-  weather_data$Date <- as.Date(weather_data$Date)
+  weather_data <- weather_data %>%
+    mutate(Date = as.Date(Date))  # Ensure Date is in Date format
   
-  # Extract the unique years in the weather data
-  unique_years <- unique(weather_data$YEAR)
+  # Define the target sowing date for each year (October 1)
+  weather_data <- weather_data %>%
+    mutate(Target_Sowing_Date = as.Date(paste0(YEAR, "-10-01")))
   
-  # Initialize an empty vector to store sowing dates
-  sowing_dates <- c()
+  # Find the closest available date to the target sowing date for each year
+  sowing_dates <- weather_data %>%
+    group_by(YEAR) %>%
+    summarise(Sowing_Date = Date[which.min(abs(Date - Target_Sowing_Date))], .groups = "drop")
   
-  # Loop through each year to find the closest date to September 30
-  for (year in unique_years) {
-    # Define the target sowing date (first of October)
-    target_date <- as.Date(paste0(year, "-10-01"))
-    
-    # Find the closest available date in the weather data
-    available_dates <- weather_data$Date
-    closest_date <- available_dates[which.min(abs(available_dates - target_date))]
-    
-    # Store the closest sowing date
-    sowing_dates <- c(sowing_dates, closest_date)
-    # Convert numeric sowing dates to readable dates
-    sowing_dates <- as.Date(sowing_dates)
-  }
-  
-  return(sowing_dates)
+  return(sowing_dates$Sowing_Date)
 }

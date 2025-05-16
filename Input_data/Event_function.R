@@ -15,8 +15,8 @@ eventfun <- function(t, y, parms) {
     y["WRT"] <- initial_root_weight  # Initial root weight
     y["WSO"] <- initial_storage_weight  # Initial storage organ weight
     y["LAI"] <- initial_LAI # Initial Leaf Area Index (LAI)
-    y["TSUM"] <- 0
-    y["DVS"] <- crop$DVSI  # Reset DVS stage to initial value
+    #y["TSUM"] <- 0
+    #y["DVS"] <- crop$DVSI  # Reset DVS stage to initial value
     
     # Return the updated state vector
     return(y)
