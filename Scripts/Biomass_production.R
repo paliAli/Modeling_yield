@@ -97,6 +97,28 @@ for (i in 1:length(Unique_ID)) {
 biomass_files <- list.files(path = "Output", pattern = "biomass_production_", full.names = TRUE)
 biomass_data <- lapply(biomass_files, read.csv)
 
+# Extract final WSO (storage organ biomass) for each file
+yield_data <- data.frame(
+  File = basename(biomass_files),
+  Unique_ID = NA,
+  Season_ID = NA,
+  Final_WSO_kg_ha = NA
+)
+
+for (i in seq_along(biomass_data)) {
+  df <- biomass_data[[i]]
+  
+  # Extract final WSO
+  final_WSO <- tail(df$WSO, 1)  # kg/ha
+  
+  # Extract pixel and season info from filename
+  file_parts <- unlist(strsplit(gsub("biomass_production_|\\.csv", "", yield_data$File[i]), "_"))
+  
+  yield_data$Unique_ID[i] <- file_parts[1]
+  yield_data$Season_ID[i] <- file_parts[2]
+  yield_data$Final_WSO_kg_ha[i] <- final_WSO
+}
+
 test <- biomass_data[[3]]
 
 # Plot the results ----

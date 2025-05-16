@@ -57,8 +57,7 @@ crop_growth <- function(t, state, parameters){
       c(dWLV, dWST, dWRT, dWSO, dLAI),
       Rd = Rd,
       RN = RN,
-      DVS = DVS_now,
-      WSO = state["WSO"] + dWSO  # Accumulated storage organ biomass
+      DVS = DVS_now
     ))
   })
 }
