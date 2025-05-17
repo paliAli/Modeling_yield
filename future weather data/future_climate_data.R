@@ -7,26 +7,37 @@ library(raster)
 
 ?cmip6_world
 #use cmip6_world() function to download climate data
-tmax2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmax", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
-tmin2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmin", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
-prec2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "prec", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
+#it only shows multi-year average climate data
+tmax2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmax", 10, path = "future weather data")
+tmin2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmin", 10, path = "future weather data")
+prec2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "prec", 10, path = "future weather data")
 #tav2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tav", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
-bioc2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "bio", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
+bioc2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "bio", 10, path = "future weather data")
 
 #min_longtitude <- boundary[1] #-31.3
 #max_longtitude <- boundary[2] # 40.2
 #min_latitude <- boundary[3] # 27.6
 #max_latitude <- boundary[4] # 71.2
 #climate in europe.
-tmax_europe <- crop(tmax2021_2040, ext(-31.3,40.2,27.6,71.2))
-tmin_europe <- crop(tmin2021_2040, ext(-31.3,40.2,27.6,71.2))
-prec_europe <- crop(prec2021_2040, ext(-31.3,40.2,27.6,71.2))
+tmax_europe <- crop(tmax2021_2040, ext(-8.2,43.2,35.1,61))
+tmin_europe <- crop(tmin2021_2040, ext(-8.2,43.2,35.1,61))
+prec_europe <- crop(prec2021_2040, ext(-8.2,43.2,35.1,61))
 #tav_europe <- crop(tav2021_2040, ext(-31.3,40.2,27.6,71.2))
-bioc_europe <- crop(bioc2021_2040, ext(-31.3,40.2,27.6,71.2))
+bioc_europe <- crop(bioc2021_2040, ext(-8.2,43.2,35.1,61))
 
-#convert to dataframe
+#convert to df
+tmax_europe
+class(tmax_europe)
+tmax_europe_df <- as.data.frame(tmax_europe, xy = TRUE)
+tmin_europe_df <- as.data.frame(tmin_europe, xy = TRUE)
+prec_europe_df <- as.data.frame(prec_europe, xy = TRUE)
+bioc_europe_df <- as.data.frame(bioc_europe, xy = TRUE)
 
-
+#cplot the data
+plot(tmax_europe)
+plot(tmin_europe)
+plot(prec_europe)
+plot(bioc_europe)
 ##get future climate data from Copernicus CDS###########
 ##Climate indicators for Europe from 1940 to 2100 derived from reanalysis and climate projections
 install.packages("ncdf4")
@@ -37,81 +48,101 @@ library(tidyverse)
 
 #read .nc files
 #tasmax(the .nc file Iill put into the shared doc)
-tasmax <- "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/l1_daily_maximum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
+tasmax <- "l1_daily_maximum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
 tasmax_r <- brick(tasmax)
 
 #tasmin
-tasmin <- "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/l2_daily_minimum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
+tasmin <- "l2_daily_minimum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
 tasmin_r <- brick(tasmin)
 
 #precipitation (mm)
-pr <- "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/12_total_precipitation-projections-monthly-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
+pr <- "12_total_precipitation-projections-monthly-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
 pr_r <- brick(pr)
 
 #convert to dataframe
-df_tasmax <- as.data.frame(tasmax_r, xy = TRUE)
-df_tasmin <- as.data.frame(tasmin_r, xy = TRUE)
-df_pr <- as.data.frame(pr_r, xy = TRUE)
+tasmax_r
+tasmin_r
+pr_r
 
-#只选取x,y 和 X2025.01.01到X2027.12.01 column
-#select the first, the second and columns from X2026.01.01 to X2027.12.01
-df_tasmax <- df_tasmax %>%
-  select(1,2,X2026.01.01:X2027.12.01)
-df_tasmin <- df_tasmin %>%
-  select(1,2,X2026.01.01:X2027.12.01)
-df_pr <- df_pr %>%
-  select(1,2,X2026.01.01:X2027.12.01)
-
-#data to csv
-write.csv(df_tasmax, "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/tasmax.csv", row.names = FALSE)
-write.csv(df_tasmin, "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/tasmin.csv", row.names = FALSE)
-write.csv(df_pr, "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/pr.csv", row.names = FALSE)
-
-#convert to long format（but it always gives me an error, I don't know why）
-layer_names <- names(tasmax_r[X2026.01.01:X2027.12.01])
-time_vec <- as.Date(sub("X", "", layer_names), format = "%Y.%m.%d")
-colnames(df_tasmax) <- c("lon", "lat", as.character(time_vec))
-df_tasmax <- df_tasmax %>%
-  pivot_longer(
-    cols = -c(lon, lat),
-    names_to = "time",
-    values_to = "tasmax"
-  )
+#标准化数据类型 standardize the data type
+#去掉日期中的X remove the X in the date
+layer_names <- names(tasmax_r)
+dates_str_tasmax <- sub("^X","",layer_names) 
 
 layer_names <- names(tasmin_r)
-time_vec <- as.Date(sub("X", "", layer_names), format = "%Y.%m.%d")
-colnames(df_tasmin) <- c("lon", "lat", as.character(time_vec))
-df_tasmin <- df_tasmin %>%
-  pivot_longer(
-    cols = -c(lon, lat),
-    names_to = "time",
-    values_to = "tasmin"
-  )
+dates_str_tasmin <- sub("^X","",layer_names) 
 
 layer_names <- names(pr_r)
-time_vec <- as.Date(sub("X", "", layer_names), format = "%Y.%m.%d")
-colnames(df_pr) <- c("lon", "lat", as.character(time_vec))
-df_pr <- df_pr %>%
-  pivot_longer(
-    cols = -c(lon, lat),
-    names_to = "time",
-    values_to = "pr"
-  )
+dates_str_pr <- sub("^X","",layer_names)
 
-#conmbine the dataframes
-df <- df_tasmax  %>%
-  left_join(df_tasmin, by = c("lon", "lat", "time"))  %>%
-  left_join(df_pr, by = c("lon", "lat", "time"))
+dates_tasmax <- as.Date(dates_str_tasmax, format = "%Y.%m.%d")
+dates_tasmin <- as.Date(dates_str_tasmin, format = "%Y.%m.%d")
+dates_pr <- as.Date(dates_str_pr, format = "%Y.%m.%d")
+dates <- unique(c(dates_tasmax, dates_tasmin, dates_pr))
 
+#select the time period from 2026-01-01 to 2029-01-01
+start_date <- as.Date("2026-01-01")
+end_date <- as.Date("2029-01-01")
+selectPeriod <- dates[dates >= start_date & dates <= end_date]
+indices <- which(dates %in% selectPeriod)
+
+#select the data
+tasmax_2026_2028 <- subset(tasmax_r, indices)
+tasmin_2026_2028 <- subset(tasmin_r, indices)
+pr_2026_2028 <- subset(pr_r, indices)
+
+#select the data of Europe
+#crop the data
+boundary <- extent(-8.2, 43.2, 35.1, 61)
+tasmax_2026_2028 <- crop(tasmax_2026_2028, boundary)
+tasmin_2026_2028 <- crop(tasmin_2026_2028, boundary)
+pr_2026_2028 <- crop(pr_2026_2028, boundary)
+head(names(tasmax_2026_2028))
+
+#修改时间格式 remove the X in the date
+tmax_df <- as.data.frame(tasmax_2026_2028, xy=TRUE, na.rm=TRUE)
+tmin_df <- as.data.frame(tasmin_2026_2028, xy=TRUE, na.rm=TRUE)
+pr_df <- as.data.frame(pr_2026_2028, xy=TRUE, na.rm=TRUE)
+
+# 现在修改列名（除了前两列x,y）
+colnames(tmax_df)[-(1:2)] <- as.character(as.Date(sub("^X", "", colnames(tmax_df)[-(1:2)]), format="%Y.%m.%d"))
+colnames(tmin_df)[-(1:2)] <- as.character(as.Date(sub("^X", "", colnames(tmin_df)[-(1:2)]), format="%Y.%m.%d"))
+colnames(pr_df)[-(1:2)] <- as.character(as.Date(sub("^X", "", colnames(pr_df)[-(1:2)]), format="%Y.%m.%d"))
+
+head(colnames(tmax_df))
+#now the date is yyyy-mm-dd format
+
+#convert to long format
+tmax_long <- tmax_df %>%
+  pivot_longer(cols = -c(x, y),
+               names_to = "Date",
+               values_to = "Tmax") %>%
+  mutate(Date = as.Date(Date)) 
+tmin_long <- tmin_df %>%
+  pivot_longer(cols = -c(x, y),
+               names_to = "Date",
+               values_to = "Tmin") %>%
+  mutate(Date = as.Date(Date))
+pr_long <- pr_df %>%
+  pivot_longer(cols = -c(x, y),
+               names_to = "Date",
+               values_to = "Precipitation") %>%
+  mutate(Date = as.Date(Date))
+
+head(tmax_long)
+
+
+#data to csv
+write.csv(tmax_long, "future weather data/tasmax_long.csv", row.names = FALSE)
+write.csv(tmin_long, "future weather data/tasmin_long.csv", row.names = FALSE)
+write.csv(pr_long, "future weather data/pr_long.csv", row.names = FALSE)
+
+#combine the data
+df_future_climate <- tmax_long  %>%
+  left_join(tmin_long, by = c("x", "y", "Date"))  %>%
+  left_join(pr_long, by = c("x", "y", "Date"))
 #save as csv
-
-write.csv(df, "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/future_weather_data.csv", row.names = FALSE)
-
-#define the scale of Europe(I copy the code from the previous script)
-source("Input_data/LowerResolution.R")
-latitudes <- Wanted_Points$y
-longitudes <- Wanted_Points$x
-
+write.csv(df_future_climate, "future weather data/future_weather_data_long.csv", row.names = FALSE)
 
 ##get future climate data using CMIP6 (2041 - 2060)###########
 #very complicated
