@@ -1,6 +1,8 @@
 rm(list = ls())
+#i set the future climate data file as dictionary
 
 ##use geodata cmip6_world() function to download climate data######
+#but it only shows multiyear average climate data
 rm(list = ls())
 library(geodata)
 library(raster)
@@ -47,7 +49,7 @@ library(raster)
 library(tidyverse)
 
 #read .nc files
-#tasmax(the .nc file Iill put into the shared doc)
+#tasmax(the .nc file Iill put into the shared doc, it s too large)
 tasmax <- "l1_daily_maximum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
 tasmax_r <- brick(tasmax)
 
@@ -132,7 +134,7 @@ pr_long <- pr_df %>%
 head(tmax_long)
 
 
-#data to csv
+#data to csv(these csv are uploaded, you can read them in the file)    
 write.csv(tmax_long, "future weather data/tasmax_long.csv", row.names = FALSE)
 write.csv(tmin_long, "future weather data/tasmin_long.csv", row.names = FALSE)
 write.csv(pr_long, "future weather data/pr_long.csv", row.names = FALSE)
@@ -141,7 +143,7 @@ write.csv(pr_long, "future weather data/pr_long.csv", row.names = FALSE)
 df_future_climate <- tmax_long  %>%
   left_join(tmin_long, by = c("x", "y", "Date"))  %>%
   left_join(pr_long, by = c("x", "y", "Date"))
-#save as csv
+#save as csv (the combined one is too large, and cannot be uploaded)  
 write.csv(df_future_climate, "future weather data/future_weather_data_long.csv", row.names = FALSE)
 
 ##get future climate data using CMIP6 (2041 - 2060)###########
@@ -151,22 +153,22 @@ library(sp)
 library(raster)
 #download climate data from WorldClim
 #read tn tx pr and bc raster
-tn <- raster("C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/wc2.1_10m_tmin_ACCESS-CM2_ssp126_2041-2060.tif")
-tx <- raster("C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/wc2.1_10m_tmax_ACCESS-CM2_ssp126_2041-2060.tif")
-pr <- raster("C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/wc2.1_10m_prec_ACCESS-CM2_ssp126_2041-2060.tif")
-bc <- raster("C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data/wc2.1_10m_bioc_ACCESS-CM2_ssp126_2041-2060.tif")
+tn <- raster("future weather data/wc2.1_10m_tmin_ACCESS-CM2_ssp126_2041-2060.tif")
+tx <- raster("future weather data/wc2.1_10m_tmax_ACCESS-CM2_ssp126_2041-2060.tif")
+pr <- raster("future weather data/wc2.1_10m_prec_ACCESS-CM2_ssp126_2041-2060.tif")
+bc <- raster("future weather data/wc2.1_10m_bioc_ACCESS-CM2_ssp126_2041-2060.tif")
 
 ##get future cliamte data using geodata package
 install.packages("geodata")
 library(geodata)
 
 #use cmip6_world() function to download climate data
-tmax2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmax", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
-prec2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "prec", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
-tmin2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmin", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
+tmax2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmax", 10, path = "future weather data")
+prec2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "prec", 10, path = "future weather data")
+tmin2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmin", 10, path = "future weather data")
 
 #climate in europe. 
-tmax_europe <- crop(tmax2021_2040,  ext(-31.3,40.2,27.6,71.2))
-tmin_europe <- crop(tmin2021_2040,  ext(-31.3,40.2,27.6,71.2))
-prec_europe <- crop(prec2021_2040,  ext(-31.3,40.2,27.6,71.2))
+tmax_europe <- crop(tmax2021_2040,  boundary)
+tmin_europe <- crop(tmin2021_2040,  boundary)
+prec_europe <- crop(prec2021_2040,  boundary)
 
