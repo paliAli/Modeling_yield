@@ -19,7 +19,8 @@ bioc2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "bio", 10, path = "
 #min_longtitude <- boundary[1] #-31.3
 #max_longtitude <- boundary[2] # 40.2
 #min_latitude <- boundary[3] # 27.6
-#max_latitude <- boundary[4] # 71.2
+#max_latitude <- boundary[4] # 71.2  
+#-8.2,43.2,35.1,61 the rage of arable land in Europe. this data is from lowerresolution
 #climate in europe.
 tmax_europe <- crop(tmax2021_2040, ext(-8.2,43.2,35.1,61))
 tmin_europe <- crop(tmin2021_2040, ext(-8.2,43.2,35.1,61))
