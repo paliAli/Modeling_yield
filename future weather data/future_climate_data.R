@@ -80,9 +80,9 @@ dates_tasmin <- as.Date(dates_str_tasmin, format = "%Y.%m.%d")
 dates_pr <- as.Date(dates_str_pr, format = "%Y.%m.%d")
 dates <- unique(c(dates_tasmax, dates_tasmin, dates_pr))
 
-#select the time period from 2026-01-01 to 2029-01-01
+#select the time period from 2026-01-01 to 2028-06-01
 start_date <- as.Date("2026-01-01")
-end_date <- as.Date("2029-01-01")
+end_date <- as.Date("2028-06-01")
 selectPeriod <- dates[dates >= start_date & dates <= end_date]
 indices <- which(dates %in% selectPeriod)
 
