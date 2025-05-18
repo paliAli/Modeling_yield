@@ -119,7 +119,7 @@ for (i in seq_along(biomass_data)) {
   yield_data$Final_WSO_kg_ha[i] <- final_WSO
 }
 
-test <- biomass_data[[3]]
+test <- biomass_data[[4]]
 
 # Plot the results ----
 ggplot(test, aes(x = time)) +
