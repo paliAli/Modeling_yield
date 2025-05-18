@@ -114,8 +114,8 @@ for (i in seq_along(biomass_data)) {
   # Extract pixel and season info from filename
   file_parts <- unlist(strsplit(gsub("biomass_production_|\\.csv", "", yield_data$File[i]), "_"))
   
-  yield_data$Unique_ID[i] <- file_parts[1]
-  yield_data$Season_ID[i] <- file_parts[2]
+  yield_data$Unique_ID[i] <- paste(file_parts[1], file_parts[2], sep = "_")
+  yield_data$Season_ID[i] <- file_parts[3]
   yield_data$Final_WSO_kg_ha[i] <- final_WSO
 }
 
