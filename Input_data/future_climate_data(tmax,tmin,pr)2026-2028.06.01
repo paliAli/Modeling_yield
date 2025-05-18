@@ -153,6 +153,8 @@ df_future_climate <- tmax_long  %>%
 write.csv(df_future_climate, "future weather data/future_weather_data_long.csv", row.names = FALSE)
 
 ##get future climate data using CMIP6 (2041 - 2060)###########
+#using this method we can only get the monthly average climate data for 2041 – 2060
+#each layer shows the average data for a specific month across that 20-year period
 #use raster package
 library(sp)
 library(raster)
@@ -163,3 +165,19 @@ tn <- raster("future weather data/wc2.1_10m_tmin_ACCESS-CM2_ssp126_2041-2060.tif
 tx <- raster("future weather data/wc2.1_10m_tmax_ACCESS-CM2_ssp126_2041-2060.tif")
 pr <- raster("future weather data/wc2.1_10m_prec_ACCESS-CM2_ssp126_2041-2060.tif")
 bc <- raster("future weather data/wc2.1_10m_bioc_ACCESS-CM2_ssp126_2041-2060.tif")
+
+nlayers(tn)
+head(tn)
+
+#crop the data (the range of arable land in Europe)
+boundary <- extent(-8.2, 43.2, 35.1, 61)
+tn <- crop(tn, boundary)
+tx <- crop(tx, boundary)
+pr <- crop(pr, boundary)
+bc <- crop(bc, boundary)
+
+#plot the data
+plot(tn)
+plot(tx)
+plot(pr)
+plot(bc)
