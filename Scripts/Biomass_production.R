@@ -119,7 +119,20 @@ for (i in seq_along(biomass_data)) {
   yield_data$Final_WSO_kg_ha[i] <- final_WSO
 }
 
+# Split the Unique_ID column into Longitude and Latitude
+library(tidyr)
+yield_data <- yield_data %>%
+  separate(Unique_ID, into = c("Longitude", "Latitude"), sep = "_", convert = TRUE)
+
+str(yield_data)
+
 test <- biomass_data[[2]]
+
+# Create a map for each coordinates showing the final WSO
+
+
+
+
 
 # Plot the results ----
 ggplot(test, aes(x = time)) +

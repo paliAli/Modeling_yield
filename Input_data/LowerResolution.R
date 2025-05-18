@@ -92,7 +92,7 @@ Wanted_Points$Longitude <- coordinates(Wanted_Points_transformed)[, 1]
 Wanted_Points$Latitude <- coordinates(Wanted_Points_transformed)[, 2]
 
 # Inspect the updated data frame
-head(Wanted_Points)
+head(Wanted_Points, 50)
 
 # Plot the transformed points
 plot(Wanted_Points$Latitude ~ Wanted_Points$Longitude, 
