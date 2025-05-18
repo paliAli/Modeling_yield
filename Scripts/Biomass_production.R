@@ -109,14 +109,14 @@ for (i in seq_along(biomass_data)) {
   df <- biomass_data[[i]]
   
   # Extract final WSO
-  final_WSO <- tail(df$WSO, 1)  # kg/ha
+  final_WSO <- sum(df$WSO)  # g/m2
   
   # Extract pixel and season info from filename
   file_parts <- unlist(strsplit(gsub("biomass_production_|\\.csv", "", yield_data$File[i]), "_"))
   
   yield_data$Unique_ID[i] <- paste(file_parts[1], file_parts[2], sep = "_")
   yield_data$Season_ID[i] <- file_parts[3]
-  yield_data$Final_WSO_kg_ha[i] <- final_WSO
+  yield_data$Final_WSO_g_m2[i] <- final_WSO
 }
 
 test <- biomass_data[[3]]

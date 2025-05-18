@@ -19,8 +19,9 @@ crop_growth <- function(t, state, parameters){
     # Intercepted PAR using Beer’s Law
     fPAR <- 1 - exp(-k * LAI_now)  # k = light extinction coefficient
     
+    RUE <- 3.0  # g/MJ
     # Simplified calculation of photosynthesis
-    Rd <- Ce * PAR * fPAR # gross assimilation in kg/ha/day
+    Rd <- RUE * PAR * fPAR * 10 # gross assimilation in kg/ha/day
     
     # Maintenance respiration
     RM_25 <- WLV*RML + WST*RMS + WRT*RMR + WSO*RMO
