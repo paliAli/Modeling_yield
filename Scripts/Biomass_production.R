@@ -102,24 +102,24 @@ yield_data <- data.frame(
   File = basename(biomass_files),
   Unique_ID = NA,
   Season_ID = NA,
-  Final_WSO_g_m2 = NA
+  Final_WSO_kg_ha = NA
 )
 
 for (i in seq_along(biomass_data)) {
   df <- biomass_data[[i]]
   
   # Extract final WSO
-  final_WSO <- sum(df$WSO)  # g/m2
+  final_WSO <- sum(df$WSO)  # kg/ha
   
   # Extract pixel and season info from filename
   file_parts <- unlist(strsplit(gsub("biomass_production_|\\.csv", "", yield_data$File[i]), "_"))
   
   yield_data$Unique_ID[i] <- paste(file_parts[1], file_parts[2], sep = "_")
   yield_data$Season_ID[i] <- file_parts[3]
-  yield_data$Final_WSO_g_m2[i] <- final_WSO
+  yield_data$Final_WSO_kg_ha[i] <- final_WSO
 }
 
-test <- biomass_data[[3]]
+test <- biomass_data[[2]]
 
 # Plot the results ----
 ggplot(test, aes(x = time)) +
@@ -127,7 +127,6 @@ ggplot(test, aes(x = time)) +
   geom_line(aes(y = WST, color = "Stem weight"), linewidth = 1.2) +
   geom_line(aes(y = WRT, color = "Root weight"), linewidth = 1.2) +
   geom_line(aes(y = WSO, color = "Storage weight"), linewidth = 1.2) +
-  geom_line(aes(y = WSO.WSO, color = "Yield")) +
   labs(title = "Biomass Production Over Time",
        x = "Time",
        y = "Weight (kg/ha)") +
