@@ -1,0 +1,183 @@
+rm(list = ls())
+#i set the future climate data file as dictionary
+
+##use geodata cmip6_world() function to download climate data######
+#but it only shows multiyear average climate data
+rm(list = ls())
+library(geodata)
+library(raster)
+
+?cmip6_world
+#use cmip6_world() function to download climate data
+#it only shows multi-year average climate data
+tmax2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmax", 10, path = "future weather data")
+tmin2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tmin", 10, path = "future weather data")
+prec2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "prec", 10, path = "future weather data")
+#tav2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "tav", 10, path = "C:/Users/Lilma wang/Desktop/新建文件夹/1 R programme/小组作业/Modeling_yield/future weather data")
+bioc2021_2040 <- cmip6_world("ACCESS-CM2","126","2021-2040", "bio", 10, path = "future weather data")
+
+#min_longtitude <- boundary[1] #-31.3
+#max_longtitude <- boundary[2] # 40.2
+#min_latitude <- boundary[3] # 27.6
+#max_latitude <- boundary[4] # 71.2  
+#-8.2,43.2,35.1,61 the rage of arable land in Europe. this data is from lowerresolution
+#climate in europe.
+tmax_europe <- crop(tmax2021_2040, ext(-8.2,43.2,35.1,61))
+tmin_europe <- crop(tmin2021_2040, ext(-8.2,43.2,35.1,61))
+prec_europe <- crop(prec2021_2040, ext(-8.2,43.2,35.1,61))
+#tav_europe <- crop(tav2021_2040, ext(-31.3,40.2,27.6,71.2))
+bioc_europe <- crop(bioc2021_2040, ext(-8.2,43.2,35.1,61))
+
+#convert to df
+tmax_europe
+class(tmax_europe)
+tmax_europe_df <- as.data.frame(tmax_europe, xy = TRUE)
+tmin_europe_df <- as.data.frame(tmin_europe, xy = TRUE)
+prec_europe_df <- as.data.frame(prec_europe, xy = TRUE)
+bioc_europe_df <- as.data.frame(bioc_europe, xy = TRUE)
+
+#cplot the data
+plot(tmax_europe)
+plot(tmin_europe)
+plot(prec_europe)
+plot(bioc_europe)
+#these plots show the average climate data from 2021 to 2040, and I dont think it can be directly used in the model, but they show the trend of climate change in 
+
+##get future climate data from Copernicus CDS###########
+##Climate indicators for Europe from 1940 to 2100 derived from reanalysis and climate projections
+#first, you need to register an account in Copernicus Climate Data Store (CDS) and request the data
+#after you get the data, you can use the following code to read the data
+install.packages("ncdf4")
+install.packages("raster")
+library(ncdf4)
+library(raster)
+library(tidyverse)
+
+#read .nc files
+#tasmax(the .nc file Iill put into the shared doc, it s too large)
+tasmax <- "future weather data/l1_daily_maximum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
+tasmax_r <- brick(tasmax)
+
+#tasmin
+tasmin <- "future weather data/l2_daily_minimum_temperature-projections-monthly-mean-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
+tasmin_r <- brick(tasmin)
+
+#precipitation (mm)
+pr <- "future weather data/12_total_precipitation-projections-monthly-rcp_4_5-cclm4_8_17-mpi_esm_lr-r1i1p1-grid-v1.0.nc"
+pr_r <- brick(pr)
+
+
+#convert to dataframe
+tasmax_r
+tasmin_r
+pr_r
+
+#标准化数据类型 standardize the data type
+#去掉日期中的X remove the X in the date
+layer_names <- names(tasmax_r)
+dates_str_tasmax <- sub("^X","",layer_names) 
+
+layer_names <- names(tasmin_r)
+dates_str_tasmin <- sub("^X","",layer_names) 
+
+layer_names <- names(pr_r)
+dates_str_pr <- sub("^X","",layer_names)
+
+dates_tasmax <- as.Date(dates_str_tasmax, format = "%Y.%m.%d")
+dates_tasmin <- as.Date(dates_str_tasmin, format = "%Y.%m.%d")
+dates_pr <- as.Date(dates_str_pr, format = "%Y.%m.%d")
+dates <- unique(c(dates_tasmax, dates_tasmin, dates_pr))
+
+#select the time period from 2026-01-01 to 2028-06-01
+start_date <- as.Date("2026-01-01")
+end_date <- as.Date("2028-06-01")
+selectPeriod <- dates[dates >= start_date & dates <= end_date]
+indices <- which(dates %in% selectPeriod)
+
+#select the data
+tasmax_2026_2028 <- subset(tasmax_r, indices)
+tasmin_2026_2028 <- subset(tasmin_r, indices)
+pr_2026_2028 <- subset(pr_r, indices)
+
+#select the data of Europe
+#crop the data
+boundary <- extent(-8.2, 43.2, 35.1, 61)
+tasmax_2026_2028 <- crop(tasmax_2026_2028, boundary)
+tasmin_2026_2028 <- crop(tasmin_2026_2028, boundary)
+pr_2026_2028 <- crop(pr_2026_2028, boundary)
+head(names(tasmax_2026_2028))
+
+#修改时间格式 remove the X in the date
+tmax_df <- as.data.frame(tasmax_2026_2028, xy=TRUE, na.rm=TRUE)
+tmin_df <- as.data.frame(tasmin_2026_2028, xy=TRUE, na.rm=TRUE)
+pr_df <- as.data.frame(pr_2026_2028, xy=TRUE, na.rm=TRUE)
+
+# 现在修改列名（除了前两列x,y）
+colnames(tmax_df)[-(1:2)] <- as.character(as.Date(sub("^X", "", colnames(tmax_df)[-(1:2)]), format="%Y.%m.%d"))
+colnames(tmin_df)[-(1:2)] <- as.character(as.Date(sub("^X", "", colnames(tmin_df)[-(1:2)]), format="%Y.%m.%d"))
+colnames(pr_df)[-(1:2)] <- as.character(as.Date(sub("^X", "", colnames(pr_df)[-(1:2)]), format="%Y.%m.%d"))
+
+head(colnames(tmax_df))
+#now the date is yyyy-mm-dd format
+
+#convert to long format
+tmax_long <- tmax_df %>%
+  pivot_longer(cols = -c(x, y),
+               names_to = "Date",
+               values_to = "Tmax") %>%
+  mutate(Date = as.Date(Date)) 
+tmin_long <- tmin_df %>%
+  pivot_longer(cols = -c(x, y),
+               names_to = "Date",
+               values_to = "Tmin") %>%
+  mutate(Date = as.Date(Date))
+pr_long <- pr_df %>%
+  pivot_longer(cols = -c(x, y),
+               names_to = "Date",
+               values_to = "Precipitation") %>%
+  mutate(Date = as.Date(Date))
+
+head(tmax_long)
+
+
+#data to csv(these csv are uploaded, you can read them in the file)    
+write.csv(tmax_long, "future weather data/tasmax_long.csv", row.names = FALSE)
+write.csv(tmin_long, "future weather data/tasmin_long.csv", row.names = FALSE)
+write.csv(pr_long, "future weather data/pr_long.csv", row.names = FALSE)
+
+#combine the data
+df_future_climate <- tmax_long  %>%
+  left_join(tmin_long, by = c("x", "y", "Date"))  %>%
+  left_join(pr_long, by = c("x", "y", "Date"))
+#save as csv (the combined one is too large, and cannot be uploaded)  
+write.csv(df_future_climate, "future weather data/future_weather_data_long.csv", row.names = FALSE)
+
+##get future climate data using CMIP6 (2041 - 2060)###########
+#using this method we can only get the monthly average climate data for 2041 – 2060
+#each layer shows the average data for a specific month across that 20-year period
+#use raster package
+library(sp)
+library(raster)
+
+#download climate data from WorldClim
+#read tn tx pr and bc raster
+tn <- raster("future weather data/wc2.1_10m_tmin_ACCESS-CM2_ssp126_2041-2060.tif")
+tx <- raster("future weather data/wc2.1_10m_tmax_ACCESS-CM2_ssp126_2041-2060.tif")
+pr <- raster("future weather data/wc2.1_10m_prec_ACCESS-CM2_ssp126_2041-2060.tif")
+bc <- raster("future weather data/wc2.1_10m_bioc_ACCESS-CM2_ssp126_2041-2060.tif")
+
+nlayers(tn)
+head(tn)
+
+#crop the data (the range of arable land in Europe)
+boundary <- extent(-8.2, 43.2, 35.1, 61)
+tn <- crop(tn, boundary)
+tx <- crop(tx, boundary)
+pr <- crop(pr, boundary)
+bc <- crop(bc, boundary)
+
+#plot the data
+plot(tn)
+plot(tx)
+plot(pr)
+plot(bc)
