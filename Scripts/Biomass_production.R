@@ -102,7 +102,7 @@ yield_data <- data.frame(
   File = basename(biomass_files),
   Unique_ID = NA,
   Season_ID = NA,
-  Final_WSO_kg_ha = NA
+  Final_WSO_g_m2 = NA
 )
 
 for (i in seq_along(biomass_data)) {
@@ -119,7 +119,7 @@ for (i in seq_along(biomass_data)) {
   yield_data$Final_WSO_kg_ha[i] <- final_WSO
 }
 
-test <- biomass_data[[4]]
+test <- biomass_data[[3]]
 
 # Plot the results ----
 ggplot(test, aes(x = time)) +
