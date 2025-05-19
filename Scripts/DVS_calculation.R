@@ -81,14 +81,24 @@ summary(DVS_weather)
 
 write.csv(DVS_weather, "Input_data/DVS_weather.csv", row.names = FALSE)
 
+# Remove the year 2025
+DVS_weather <- DVS_weather %>%
+  filter(Season_ID != 2024)
+
 # Visualize the development stages 
 ggplot(data = DVS_weather, aes(x = Date, y = DVS_stage, color = ID)) +
  geom_line() +
  labs(title = "Development Stages (DVS) Over Time",
       x = "Date",
       y = "Development Stage (DVS)") +
+ scale_x_date(date_labels = "%b %Y", date_breaks = "3 months") + # Show date each 3 months, starting from October
  theme_minimal() +
- theme(legend.position = "none") # Remove legend for clarity
+ theme(legend.position = "none")  + 
+  theme(axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.text.x = element_text(vjust = 0.35, angle = 15),
+    plot.title = element_text(size = 15), # Remove legend for clarity
+    plot.margin = margin(10, 10, 10, 10))
 
 
 # weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[1],]
