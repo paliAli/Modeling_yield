@@ -1,6 +1,9 @@
-########################################################
-########## Exercise Mapping in R  #####################
-#####################################################
+##%######################################################%##
+#                                                          #
+####               Exercise Mapping in R                ####
+#                                                          #
+##%######################################################%##
+
 
 # Teaching Block "Group Models at Scale"
 
@@ -29,7 +32,7 @@ str()
 #...
 
 
-# 2. Bounding Box defining (bigger area aroung Switzerland)
+# 2. Bounding Box defining (bigger area around Switzerland)
 lon_min <- 5.5
 lon_max <- 10.7
 lat_min <- 45.5
@@ -55,10 +58,12 @@ countries <- ne_countries(scale = "medium", returnclass = "sf")
 # List of defined states in Europe
 eu_countries <- ("Switzerland")
 
-# filter for countries
-europe_selected <- countries %>% 
-  filter(admin %in% eu_countries)
+# Obtain data for Switzerland from the data frame countries
+# Use function filter() from dplyr 
+# First observe the dataset countries to see in which column are the country names
+europe_selected <- # your code here
 
+  
 ggplot() +
   geom_sf(data = europe_selected, fill = NA, color = "black", size = 0.5) +  # borders of countries
   geom_point(data = Swiss_region_points, aes(x = Longitude, y = Latitude, color = Final_WSO_kg_ha), size = 2) +
@@ -71,7 +76,7 @@ ggplot() +
   theme_minimal()
 
 
-
+# Try plotting other countries as well!
 
 
 #########What about the Raster?

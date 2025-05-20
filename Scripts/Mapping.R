@@ -1,3 +1,6 @@
+# Import the yield data
+read.csv("Output/biomass_yield.csv") # This does not actually work because Pascal did not export the data for some reason
+
 # Create a map for each coordinates showing the final WSO
 str(yield_data)
 
