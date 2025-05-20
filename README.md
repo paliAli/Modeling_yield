@@ -10,16 +10,23 @@ Simulate (potential) crop yield of winter wheat
 
 ## To-do:
 - [x] Obtain the weather data from NASA 
-- [] Create rasters of Europe 
-- [] Create the basic crop model
+- [x] Create rasters of Europe 
+- [x] Create the basic crop model
 - [] Create a basic soil model
 - [] Combine the crop and soil model
-- [] Simulate growth of WW in Europe
+- [x] Map growth of winter wheat in Europe
 
 ## Structure of the repository
-Input_data: contains the data on climate, soil, sowing dates
+Input_data: 
+- crop_data.R - contains the crop parameters
+- LowerResolution.R - script to obtain the coordinates
+- weather_data_2223.R - script to obtain the weather data
 
-Scripts: contain the model functions
+Scripts: 
+- Biomass_function.R - function of the crop model that calculates changes in biomass and LAI
+- Biomass_production.R - script that runs the model and creates a dataframe with the final biomass per growing season
+- DVS_calculation.R - script that calculates developmental stages of ww as a function of mean temperature
+- Event_function.R - function to reset the biomass at the end of each growing season 
 
 Output: Contains the yield predictions, visualized as a map
 
@@ -55,12 +62,7 @@ https://www.wur.nl/en/Research-Results/Research-Institutes/Environmental-Researc
    -  RMS - relative maintenance respiration rate of stems ['d-1']
    -  RGRLAI - maximum relative increase in LAI ['d-1']
    -  Q10 - relative increase in respiration rate per 10 degrees Celsius temperature increase
-   -  Ce - light use efficiency
-  
-   For modeling yield under different climate change scenarios:
-   - root_depth_max – Deep rooting helps tolerate drought
-   - SMFCF, SMW, SM0 – Soil water holding capacity (can go in soil list)
-   - CRAIRC – Critical air content to avoid anaerobic conditions
+
   
 https://edepot.wur.nl/308997
 
@@ -80,14 +82,9 @@ https://github.com/ajwdewit/WOFOST_crop_parameters/blob/master/wheat.yaml
 3. **soil - soil parameters**
 4. **control - model start, latitude, elevation**
 
-The model has 8 state variables:
-1. EAF: weight of living leaves [kg ha-1]
-2. STEM: weight of stems [kg ha-1]
-3. GRAIN: weight of grains [kg ha-1]
-4. ROOT: weight of roots [kg ha-1]
-5. DEATHLEAF: weight of dead leaves [kg ha-1]
+The model has 5 state variables:
+1. WLV: weight of living leaves [kg ha-1]
+2. WST: weight of stems [kg ha-1]
+3. WSO: weight of grains [kg ha-1]
+4. WRT: weight of roots [kg ha-1]
 6. LAI: leaf area index [ha ha-1]
-7. TSUM: cumulative temperature unit [°C day]
-8. DVS: the crop development stage [unitless] 
-
-TSUM is calculated by interpolating Tavg = (Tmin + Tmax)/2
