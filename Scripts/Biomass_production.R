@@ -49,7 +49,7 @@ DVS_weather <- DVS_weather[complete.cases(DVS_weather), ]
 #source("Input_data/Sowing_dates_function.R") 
 
 # Import the event function
-source("Input_data/Event_function.R")
+source("Scripts/Event_function.R")
 
 # Define the root function
 rootfun <- function(t, state, parms) {
@@ -125,14 +125,11 @@ yield_data <- yield_data %>%
   separate(Unique_ID, into = c("Longitude", "Latitude"), sep = "_", convert = TRUE)
 
 str(yield_data)
+head(yield_data)
+
+write.csv(yield_data, "Output/biomass_yield.csv", row.names = FALSE)
 
 test <- biomass_data[[2]]
-
-# Create a map for each coordinates showing the final WSO
-
-
-
-
 
 # Plot the results ----
 ggplot(test, aes(x = time)) +

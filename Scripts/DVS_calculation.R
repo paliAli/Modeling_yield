@@ -98,7 +98,9 @@ ggplot(data = DVS_weather, aes(x = Date, y = DVS_stage, color = ID)) +
     axis.text = element_text(size = 10),
     axis.text.x = element_text(vjust = 0.35, angle = 15),
     plot.title = element_text(size = 15), # Remove legend for clarity
-    plot.margin = margin(10, 10, 10, 10))
+    plot.margin = margin(10, 22, 10, 10))
 
+# Export the plot
+ggsave("Output/DVS_plot.png", width = 10, height = 6, dpi = 300)
 
 # weather_subset <- DVS_weather[DVS_weather$ID == Unique_ID[1],]

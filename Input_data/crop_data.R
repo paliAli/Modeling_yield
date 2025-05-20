@@ -1,3 +1,5 @@
+# Values taken from https://github.com/ajwdewit/WOFOST_crop_parameters/blob/master/wheat.yaml
+
 crop <- list(
   TSUMEM = 120,
   TSUM1 = 1000,
