@@ -62,13 +62,14 @@ eu_countries <- ("Switzerland")
 # Use function filter() from dplyr 
 # First observe the dataset countries to see in which column are the country names
 europe_selected <- # your code here
+  countries %>%
+  filter(admin %in% c("Switzerland"))
 
-  
 ggplot() +
-  geom_sf(data = europe_selected, fill = NA, color = "black", size = 0.5) +  # borders of countries
-  geom_point(data = Swiss_region_points, aes(x = Longitude, y = Latitude, color = Final_WSO_kg_ha), size = 2) +
+  geom_sf(data = europe_selected, fill = "green4", alpha = 0.4, color = "black", linewidth = 2) +  # borders of countries
+  geom_point(data = Swiss_region_points, aes(x = Longitude, y = Latitude, color = Final_WSO_kg_ha), size = 5) +
   scale_color_gradient(low = "chocolate", high = "darkgreen") +
-  labs(title = "Biomass 2023", 
+  labs(title = "Biomass yield in Switzerland 2023", 
        x = "Longitude",
        y = "Latitude",
        color = "WSO [kg/ha]") +
